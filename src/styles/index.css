@@ -1,0 +1,24 @@
+@import 'tailwindcss';
+
+@import './fonts.css';
+@import './tokens.css';
+@import './loft.css';
+
+/* Tailwind reads the same tokens, so utility classes and semantic classes
+   can never drift apart. */
+@theme inline {
+  --color-room: var(--room);
+  --color-room-2: var(--room-2);
+  --color-ink: var(--ink);
+  --color-ink-dim: var(--ink-dim);
+  --color-neon: var(--neon);
+  --color-lcd: var(--lcd);
+  --font-display: var(--font-display);
+  --font-body: var(--font-body);
+  --font-lcd: var(--font-lcd);
+}
+
+:root {
+  /* Static monochrome grain — one fixed layer, never animated. */
+  --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='190'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='190' height='190' filter='url(%23g)'/%3E%3C/svg%3E");
+}

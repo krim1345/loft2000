@@ -1,0 +1,1826 @@
+/* LOFT 2000® — page styles. All colour and type flows from tokens.css. */
+
+/* ============================================================ BASE ======= */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  overflow-x: clip;
+}
+
+html {
+  scroll-behavior: smooth;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--room);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: var(--text-md);
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  transition: background-color var(--dur-mood) var(--ease-in-out),
+    color var(--dur-mood) var(--ease-in-out);
+}
+
+h1,
+h2,
+h3,
+p,
+figure,
+blockquote,
+ul,
+ol {
+  margin: 0;
+}
+
+ul,
+ol {
+  padding: 0;
+  list-style: none;
+}
+
+img,
+video,
+svg {
+  display: block;
+  max-width: 100%;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+:focus-visible {
+  outline: var(--rule-thick) solid var(--focus-ring);
+  outline-offset: 3px;
+  border-radius: var(--radius-xs);
+}
+
+::selection {
+  background: var(--neon);
+  color: oklch(98% 0 0);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.skip-link {
+  position: fixed;
+  top: var(--space-xs);
+  left: var(--space-xs);
+  z-index: var(--z-cursor);
+  padding: var(--space-xs) var(--space-md);
+  background: var(--lcd);
+  color: oklch(18% 0.04 140);
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  transform: translateY(-200%);
+}
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* ============================================================ TYPE ======= */
+
+.display {
+  font-family: var(--font-display);
+  font-style: normal;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  line-height: 0.9;
+  overflow-wrap: anywhere;
+  min-width: 0;
+  margin: 0;
+}
+
+.display--mega {
+  font-size: var(--text-mega);
+  font-weight: 700;
+  letter-spacing: var(--tracking-mega);
+  line-height: var(--leading-mega);
+}
+
+.display--xl {
+  font-size: var(--text-display);
+}
+
+.display--lg {
+  font-size: var(--text-display-s);
+}
+
+/* Emphasis by colour, never by italic. Uses the sign across the street rather
+   than the lamp colour — a light source makes a poor ink, and --glow drops
+   below readable contrast once the curtains are open. */
+.display .lit {
+  color: var(--neon);
+  transition: color var(--dur-mood) var(--ease-in-out);
+}
+
+.lede {
+  font-size: var(--text-xl);
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+  color: var(--ink);
+  max-width: 22ch;
+  text-wrap: balance;
+}
+
+.body-copy {
+  font-size: var(--text-lg);
+  line-height: 1.5;
+  color: var(--ink-dim);
+  max-width: 46ch;
+  transition: color var(--dur-mood) var(--ease-in-out);
+}
+
+.label {
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color var(--dur-mood) var(--ease-in-out);
+}
+
+.label--lcd {
+  color: var(--lcd-dim);
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+/* ============================================================ LAYOUT ===== */
+
+.shell {
+  width: 100%;
+  padding-inline: var(--gutter);
+  margin-inline: auto;
+  max-width: 1680px;
+}
+
+.movement {
+  position: relative;
+  z-index: var(--z-page);
+  background-color: var(--room);
+  transition: background-color var(--dur-mood) var(--ease-in-out);
+}
+
+.movement--flush {
+  background: none;
+}
+
+/* Deliberately uneven vertical rhythm — the page breathes differently in
+   each movement rather than marching at one padding value. */
+.pad-tall {
+  padding-block: clamp(5rem, 14vh, 11rem) clamp(5rem, 14vh, 11rem);
+}
+.pad-mid {
+  padding-block: clamp(4rem, 10vh, 8rem) clamp(4.5rem, 11vh, 9rem);
+}
+.pad-tight {
+  padding-block: clamp(3rem, 7vh, 5rem) clamp(4rem, 9vh, 7rem);
+}
+
+.rule {
+  height: var(--rule-hair);
+  background: var(--hairline);
+  border: 0;
+  transition: background-color var(--dur-mood) var(--ease-in-out);
+}
+
+/* ============================================================ GLASS ====== */
+/* The cool half of the identity — glossy aero plastic. Applied to control
+   surfaces: the docked rail, solid CTAs, selected states, the booking card. */
+
+.glass {
+  position: relative;
+  background: linear-gradient(180deg, var(--glass-hi) 0%, transparent 45%),
+    color-mix(in oklab, var(--room) 62%, var(--aero) 14%);
+  backdrop-filter: blur(18px) saturate(1.5);
+  -webkit-backdrop-filter: blur(18px) saturate(1.5);
+  border: var(--rule-hair) solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.4), var(--glass-shadow);
+  transition: background-color var(--dur-mood) var(--ease-in-out),
+    border-color var(--dur-mood) var(--ease-in-out);
+}
+
+/* A single glossy highlight streak across the top edge — the "search bar &
+   tabs" reference in one CSS rule, not a redrawn screenshot. */
+.glass::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(180deg, oklch(100% 0 0 / 0.5), transparent 55%);
+  opacity: 0.6;
+  pointer-events: none;
+}
+
+/* ============================================================ GRAIN ====== */
+/* Static. One fixed layer, no animation — the texture of a scanned print,
+   not a broken television. */
+
+.grain {
+  position: fixed;
+  inset: -50%;
+  z-index: var(--z-grain);
+  pointer-events: none;
+  opacity: var(--grain-opacity);
+  background-image: var(--grain-src);
+  background-size: 190px 190px;
+  mix-blend-mode: overlay;
+  transition: opacity var(--dur-mood) var(--ease-in-out);
+}
+
+/* ============================================================ CURSOR ===== */
+/* A viewfinder ring with a little water-drop physics: fast, directional
+   movement stretches it along the line of travel, like a blob of liquid
+   pulled across glass. Settles back to a circle the moment you stop. */
+
+.cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-cursor);
+  display: grid;
+  place-items: center;
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border: var(--rule-thick) solid oklch(99% 0 0);
+  border-radius: 50%;
+  pointer-events: none;
+  mix-blend-mode: difference;
+  will-change: transform;
+  transition: width var(--dur-short) var(--ease-out),
+    height var(--dur-short) var(--ease-out), margin var(--dur-short) var(--ease-out),
+    background-color var(--dur-short) var(--ease-out),
+    border-color var(--dur-short) var(--ease-out);
+}
+
+.cursor__label {
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: oklch(12% 0 0);
+  opacity: 0;
+  transition: opacity var(--dur-micro) var(--ease-out);
+}
+
+/* The ring uses difference blending so it stays visible on any background.
+   The labelled disc must not — difference would invert the label into the
+   artwork behind it and make the word unreadable. Squash/stretch is also
+   switched off while labelled: a stretched word is just hard to read. */
+.cursor.is-labelled {
+  width: 84px;
+  height: 84px;
+  margin: -42px 0 0 -42px;
+  background: oklch(99% 0 0);
+  border-color: oklch(99% 0 0);
+  mix-blend-mode: normal;
+}
+
+.cursor.is-labelled .cursor__label {
+  opacity: 1;
+}
+
+@media (pointer: fine) {
+  body.has-cursor,
+  body.has-cursor a,
+  body.has-cursor button,
+  body.has-cursor [data-cursor] {
+    cursor: none;
+  }
+}
+
+/* ============================================================ RAIL ======= */
+
+.rail {
+  position: fixed;
+  inset-block-start: 0;
+  inset-inline: 0;
+  z-index: var(--z-rail);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding: var(--space-md) var(--gutter);
+  transition: background-color var(--dur-long) var(--ease-out),
+    padding var(--dur-long) var(--ease-out), border-color var(--dur-long) var(--ease-out);
+  border-block-end: var(--rule-hair) solid transparent;
+}
+
+/* Edge-aligned over the footage, then it condenses into aero glass. */
+.rail.is-docked {
+  padding-block: var(--space-xs);
+  background: linear-gradient(180deg, var(--glass-hi) 0%, transparent 70%),
+    color-mix(in oklab, var(--room) 84%, var(--aero) 8%);
+  backdrop-filter: blur(16px) saturate(1.4);
+  border-block-end-color: var(--glass-edge);
+}
+
+.wordmark {
+  font-family: var(--font-display);
+  font-weight: 900;
+  font-size: clamp(1rem, 1.5vw, 1.35rem);
+  letter-spacing: -0.01em;
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.wordmark sup {
+  font-size: 0.44em;
+  vertical-align: super;
+  font-weight: 500;
+  margin-inline-start: 0.15em;
+}
+
+.rail__links {
+  display: none;
+  gap: clamp(1.25rem, 2.4vw, 2.5rem);
+}
+
+.rail__link {
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  color: var(--ink-dim);
+  white-space: nowrap;
+  padding-block: var(--space-2xs);
+  border-block-end: var(--rule-thick) solid transparent;
+  transition: color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.rail__link:hover,
+.rail__link:focus-visible {
+  color: var(--ink);
+  border-block-end-color: var(--aero);
+}
+
+.rail__right {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+}
+
+@media (min-width: 900px) {
+  .rail__links {
+    display: flex;
+  }
+  .rail__burger {
+    display: none;
+  }
+}
+
+/* At 320 the wordmark, the full CTA label and the burger do not fit on one
+   line. The label sheds words rather than the button shedding its affordance. */
+@media (max-width: 430px) {
+  .cta__long {
+    display: none;
+  }
+}
+
+.rail__burger {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  color: var(--ink);
+  border-radius: 50%;
+  transition: background-color var(--dur-micro) var(--ease-out);
+}
+
+.rail__burger:hover {
+  background-color: var(--glass-tint);
+}
+
+/* Before it docks, the rail is sitting on top of night-blue footage rather
+   than on the room's paper, so it stops taking its colour from the mood. */
+.rail:not(.is-docked) .wordmark,
+.rail:not(.is-docked) .rail__burger {
+  color: var(--on-footage);
+  text-shadow: var(--footage-shadow);
+}
+
+.rail:not(.is-docked) .rail__link {
+  color: var(--on-footage-dim);
+  text-shadow: var(--footage-shadow);
+}
+
+.rail:not(.is-docked) .rail__link:hover,
+.rail:not(.is-docked) .rail__link:focus-visible {
+  color: var(--on-footage);
+}
+
+.rail:not(.is-docked) .cta--solid {
+  color: oklch(12% 0.02 265);
+  background-color: var(--on-footage);
+}
+
+/* --- fullscreen mobile navigation --- */
+
+.sheet {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-overlay);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: var(--space-md) var(--gutter) var(--space-xl);
+  background-color: oklch(9% 0.018 265);
+  color: oklch(96% 0.008 250);
+}
+
+.sheet__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding-block-end: var(--space-lg);
+}
+
+.sheet__links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.sheet__link {
+  display: block;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(2.75rem, 13vw, 5rem);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-display);
+  line-height: 0.92;
+  white-space: nowrap;
+  transition: color var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.sheet__link:hover,
+.sheet__link:focus-visible {
+  color: var(--aero-pale);
+  transform: translateX(0.2em);
+}
+
+.sheet__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md);
+  justify-content: space-between;
+  align-items: flex-end;
+}
+
+/* ============================================================ FOOTAGE ==== */
+
+.plate {
+  position: relative;
+  overflow: hidden;
+  background-color: oklch(8% 0.015 265);
+}
+
+.plate__video,
+.plate__still {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(var(--video-bright)) contrast(var(--video-contrast))
+    saturate(var(--video-sat));
+  transition: filter var(--dur-mood) var(--ease-in-out);
+}
+
+.plate__tint {
+  position: absolute;
+  inset: 0;
+  background-color: var(--video-tint);
+  transition: background-color var(--dur-mood) var(--ease-in-out);
+  pointer-events: none;
+}
+
+/* Softens the upscale of a narrow source without reading as a "dark overlay" */
+.plate__vignette {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: var(--vignette);
+  background: radial-gradient(
+    118% 88% at 50% 42%,
+    transparent 34%,
+    oklch(7% 0.02 265 / 0.62) 100%
+  );
+  transition: opacity var(--dur-mood) var(--ease-in-out);
+}
+
+/* ============================================================ HERO ======= */
+
+.hero {
+  position: relative;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  padding-block-end: clamp(2rem, 5vh, 4rem);
+  isolation: isolate;
+}
+
+.hero__ground {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+}
+
+/* The headline has to hold in every mood, including the one where the
+   footage is brightened and barely tinted. This does not follow the mood. */
+.hero__scrim {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    oklch(8% 0.02 265 / 0.86) 0%,
+    oklch(8% 0.02 265 / 0.46) 36%,
+    transparent 64%
+  );
+}
+
+.hero__inner {
+  width: 100%;
+  padding-inline: var(--gutter);
+  margin-inline: auto;
+  max-width: 1680px;
+}
+
+.hero__type {
+  color: oklch(98% 0 0);
+  text-shadow: 0 2px 40px oklch(8% 0.02 265 / 0.55);
+}
+
+.hero__line {
+  display: block;
+}
+
+.hero__meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: var(--space-lg);
+  margin-block-start: clamp(1.5rem, 4vh, 2.75rem);
+}
+
+.hero__sub {
+  color: oklch(92% 0.01 250);
+  font-size: var(--text-lg);
+  letter-spacing: -0.01em;
+  max-width: 30ch;
+}
+
+/* The scroll cue doubles as the room's address plate */
+.hero__cue {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  color: oklch(78% 0.014 250);
+}
+
+/* ============================================================ CTA ======== */
+
+.cta {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-sm);
+  white-space: nowrap;
+  font-family: var(--font-display);
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  transition: transform var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.cta:active {
+  transform: translateY(1px);
+}
+
+/* Underline is a real element, not a background-size trick — it has its own
+   box below the baseline, so growing it can never climb into the descenders
+   of the word above it. Spring-eased via motion where the component sets
+   `--cta-fill`; a hover fallback keeps it working without JS. */
+.cta--type,
+.cta--huge {
+  position: relative;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0;
+}
+
+.cta__label {
+  display: block;
+}
+
+.cta__bar {
+  display: block;
+  align-self: stretch;
+  height: var(--rule-thick);
+  margin-block-start: 0.22em;
+  background: var(--neon);
+  border-radius: var(--radius-xs);
+  transform: scaleX(var(--cta-fill, 0));
+  transform-origin: left;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.cta--type:hover .cta__bar,
+.cta--type:focus-visible .cta__bar {
+  --cta-fill: 1;
+}
+
+.cta--type {
+  font-size: clamp(1.25rem, 2.6vw, 2.25rem);
+  color: oklch(98% 0 0);
+}
+
+/* Inverted against whatever the room is doing, so it is always the highest
+   contrast object on the page. Aero-glass instead of a flat fill. */
+.cta--solid {
+  font-size: var(--text-sm);
+  padding: 0.7em 1.15em;
+  color: var(--ink);
+  border-radius: var(--radius-pill);
+  background: linear-gradient(180deg, oklch(100% 0 0 / 0.5), transparent 60%),
+    color-mix(in oklab, var(--aero) 55%, var(--room) 30%);
+  border: var(--rule-hair) solid var(--glass-edge);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.5), 0 6px 18px oklch(20% 0.08 230 / 0.35);
+  transition: transform var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.cta--solid:hover,
+.cta--solid:focus-visible {
+  transform: translateY(-1px);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.6), 0 10px 22px oklch(20% 0.08 230 / 0.42);
+}
+
+.cta--ghost {
+  font-size: var(--text-sm);
+  padding: 0.7em 1.15em;
+  border: var(--rule-hair) solid var(--hairline);
+  border-radius: var(--radius-pill);
+  color: var(--ink);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out);
+}
+
+.cta--ghost:hover,
+.cta--ghost:focus-visible {
+  border-color: var(--aero);
+  background-color: var(--glass-tint);
+}
+
+.cta--huge {
+  font-size: clamp(2rem, 7vw, 5.5rem);
+  font-weight: 850;
+  letter-spacing: var(--tracking-display);
+  color: var(--ink);
+}
+
+.cta--huge .cta__bar {
+  height: 3px;
+}
+
+.cta--huge:hover .cta__bar,
+.cta--huge:focus-visible .cta__bar {
+  --cta-fill: 1;
+}
+
+/* ============================================================ HEADS ====== */
+/* Vertical stack only. No tag-left / heading-right split. */
+
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-md);
+  max-width: 20ch;
+}
+
+.head--wide {
+  max-width: none;
+}
+
+.head__note {
+  font-size: var(--text-lg);
+  color: var(--ink-dim);
+  max-width: 34ch;
+  transition: color var(--dur-mood) var(--ease-in-out);
+}
+
+/* ============================================================ GALLERY ==== */
+/* A real photo set you drag or click through — a wide stage plus a
+   collapsing thumbnail rail that expands the active frame. */
+
+.gallery {
+  margin-block-start: clamp(2.5rem, 7vh, 5rem);
+}
+
+.gallery__stage {
+  position: relative;
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  border: var(--rule-hair) solid var(--glass-edge);
+  aspect-ratio: 16 / 10;
+  background-color: oklch(8% 0.015 265);
+  touch-action: pan-y;
+}
+
+.gallery__track {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  cursor: grab;
+}
+
+.gallery__track:active {
+  cursor: grabbing;
+}
+
+.gallery__slide {
+  position: relative;
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+}
+
+.gallery__img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  -webkit-user-drag: none;
+  user-select: none;
+  pointer-events: none;
+}
+
+.gallery__cap {
+  position: absolute;
+  inset-inline-start: var(--space-md);
+  inset-block-end: var(--space-md);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  pointer-events: none;
+}
+
+.gallery__cap-title {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.1rem, 2.4vw, 1.6rem);
+  letter-spacing: -0.01em;
+  color: oklch(98% 0 0);
+  text-shadow: var(--footage-shadow);
+}
+
+.gallery__cap-note {
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: oklch(88% 0.02 220);
+  text-shadow: var(--footage-shadow);
+}
+
+.gallery__arrow {
+  position: absolute;
+  top: 50%;
+  translate: 0 -50%;
+  z-index: var(--z-raised);
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  color: oklch(14% 0.03 230);
+  background: linear-gradient(180deg, oklch(100% 0 0 / 0.9), oklch(88% 0.02 220 / 0.75));
+  border: var(--rule-hair) solid oklch(100% 0 0 / 0.6);
+  box-shadow: 0 8px 20px oklch(6% 0.03 240 / 0.4);
+  opacity: 0.85;
+  transition: opacity var(--dur-micro) var(--ease-out),
+    transform var(--dur-micro) var(--ease-out);
+}
+
+.gallery__arrow:hover:not(:disabled) {
+  opacity: 1;
+  transform: translateY(-50%) scale(1.08);
+}
+
+.gallery__arrow:disabled {
+  opacity: 0.25;
+  cursor: not-allowed;
+}
+
+.gallery__arrow--prev {
+  inset-inline-start: var(--space-md);
+}
+.gallery__arrow--next {
+  inset-inline-end: var(--space-md);
+}
+
+.gallery__strip {
+  display: flex;
+  height: 64px;
+  justify-content: center;
+  gap: 3px;
+  margin-block-start: var(--space-sm);
+  overflow: hidden;
+}
+
+.gallery__thumb {
+  position: relative;
+  height: 100%;
+  flex: 0 1 auto;
+  aspect-ratio: 1 / 3;
+  overflow: hidden;
+  border-radius: var(--radius-xs);
+  opacity: 0.5;
+  transition: opacity var(--dur-short) var(--ease-out),
+    aspect-ratio var(--dur-short) var(--ease-out),
+    flex-basis var(--dur-short) var(--ease-out);
+}
+
+.gallery__thumb.is-active {
+  aspect-ratio: 16 / 10;
+  opacity: 1;
+}
+
+.gallery__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  pointer-events: none;
+  user-select: none;
+}
+
+@media (max-width: 640px) {
+  .gallery__stage {
+    aspect-ratio: 4 / 5;
+  }
+  .gallery__arrow {
+    width: 38px;
+    height: 38px;
+  }
+}
+
+/* The plan is a drawing, not footage — it sits on the room's own paper. */
+.plan-block {
+  margin-block-start: clamp(2rem, 5vh, 3.5rem);
+}
+
+.plan {
+  background-color: var(--room-2);
+  border: var(--rule-hair) solid var(--hairline);
+  border-radius: var(--radius-panel);
+  aspect-ratio: 16 / 9;
+  transition: background-color var(--dur-mood) var(--ease-in-out),
+    border-color var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__svg {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: clamp(0.5rem, 1.4vw, 1.25rem);
+}
+
+.plan__wall {
+  fill: none;
+  stroke: var(--ink);
+  stroke-width: 3;
+  transition: stroke var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__inner,
+.plan__furn,
+.plan__dim,
+.plan__lead {
+  fill: none;
+  stroke: var(--ink-faint);
+  transition: stroke var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__inner {
+  stroke: var(--ink-dim);
+  stroke-width: 1.5;
+}
+.plan__furn {
+  stroke: var(--ink-dim);
+  stroke-width: 1;
+}
+.plan__dim {
+  stroke-width: 0.75;
+}
+.plan__lead {
+  stroke-width: 0.75;
+  stroke-dasharray: 2 3;
+}
+
+.plan__glass {
+  fill: none;
+  stroke: var(--aero);
+  stroke-width: 2;
+  transition: stroke var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__fill {
+  fill: var(--room-3);
+  stroke: var(--ink-faint);
+  stroke-width: 1;
+  transition: fill var(--dur-mood) var(--ease-in-out),
+    stroke var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__ink {
+  fill: var(--ink-faint);
+  stroke: none;
+  font-family: var(--font-lcd);
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition: fill var(--dur-mood) var(--ease-in-out);
+}
+
+.plan__ink--strong {
+  fill: var(--ink);
+}
+
+@media (max-width: 860px) {
+  .plan {
+    aspect-ratio: auto;
+    overflow-x: auto;
+    overscroll-behavior-x: contain;
+  }
+  .plan .plan__svg {
+    min-width: 800px;
+    padding: var(--space-sm);
+    aspect-ratio: 1200 / 720;
+    height: auto;
+  }
+}
+
+.frame {
+  position: relative;
+  overflow: hidden;
+  background-color: oklch(10% 0.015 265);
+  border-radius: var(--radius-panel);
+}
+
+.frame__cap {
+  position: absolute;
+  inset-block-end: var(--space-xs);
+  inset-inline-start: var(--space-xs);
+  padding: 0.25em 0.5em;
+  background-color: oklch(8% 0.02 265 / 0.72);
+  color: oklch(90% 0.01 250);
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--radius-xs);
+}
+
+/* A still that fills whatever box it is dropped into. */
+.frame--fill {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  aspect-ratio: auto;
+  margin: 0;
+}
+
+/* ============================================================ DETAILS ==== */
+/* An index of what is in the room, paired with a fixed preview panel that
+   crossfades on selection — nothing chases the pointer. */
+
+.details {
+  display: grid;
+  gap: var(--space-lg);
+  margin-block-start: clamp(2.5rem, 7vh, 4.5rem);
+}
+
+@media (min-width: 860px) {
+  .details {
+    grid-template-columns: minmax(0, 1fr) minmax(280px, 380px);
+    align-items: start;
+  }
+}
+
+.index {
+  border-block-start: var(--rule-hair) solid var(--hairline);
+}
+
+.index__row {
+  position: relative;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
+  width: 100%;
+  text-align: start;
+  padding-block: clamp(0.6rem, 1.6vh, 1.1rem);
+  border-block-end: var(--rule-hair) solid var(--hairline);
+  color: var(--ink);
+  transition: opacity var(--dur-short) var(--ease-out),
+    transform var(--dur-short) var(--ease-out), color var(--dur-short) var(--ease-out);
+}
+
+.index__name {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.3rem, 3.4vw, 2.5rem);
+  text-transform: uppercase;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.index__spec {
+  flex: none;
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faint);
+  transition: color var(--dur-short) var(--ease-out);
+}
+
+.index.is-probing .index__row {
+  opacity: 0.32;
+}
+
+.index.is-probing .index__row.is-live {
+  opacity: 1;
+  transform: translateX(clamp(0.4rem, 1vw, 1rem));
+}
+
+.index__row.is-live .index__spec {
+  color: var(--aero);
+}
+
+.details__preview {
+  position: sticky;
+  top: calc(var(--space-2xl) + var(--space-md));
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-panel);
+  border: var(--rule-hair) solid var(--glass-edge);
+  background-color: oklch(10% 0.015 265);
+}
+
+.details__preview .frame--fill {
+  transition: opacity var(--dur-short) var(--ease-out);
+}
+
+.details__preview-cap {
+  position: absolute;
+  inset-block-end: var(--space-sm);
+  inset-inline-start: var(--space-sm);
+  padding: 0.3em 0.6em;
+  background-color: oklch(8% 0.02 265 / 0.72);
+  color: oklch(90% 0.01 250);
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border-radius: var(--radius-xs);
+}
+
+@media (max-width: 859px) {
+  .details__preview {
+    position: relative;
+    top: auto;
+    aspect-ratio: 4 / 3;
+  }
+}
+
+/* ============================================================ PANEL ====== */
+/* The signature. A brushed-chrome, glassy remote, straight out of a 2001
+   skin — and the LCD watch it borrows its screen typography from. */
+
+.panel {
+  --bezel: linear-gradient(
+    180deg,
+    var(--chrome-hi) 0%,
+    var(--chrome-1) 14%,
+    var(--chrome-2) 50%,
+    var(--chrome-1) 84%,
+    var(--chrome-3) 100%
+  );
+  width: min(100%, 320px);
+  padding: 8px;
+  background-image: var(--bezel);
+  border-radius: var(--radius-panel);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.85),
+    inset 0 -1px 0 oklch(0% 0 0 / 0.35), var(--glass-shadow);
+}
+
+.panel__screen {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-xs);
+  padding: 9px 11px;
+  background-color: var(--lcd-bed);
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 2px 5px oklch(0% 0 0 / 0.7), inset 0 0 0 1px oklch(0% 0 0 / 0.5);
+}
+
+.panel__time {
+  font-family: var(--font-lcd);
+  font-size: 1.3rem;
+  line-height: 1;
+  letter-spacing: 0.04em;
+  font-variant-numeric: tabular-nums;
+  color: var(--lcd);
+}
+
+.panel__stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  align-items: flex-end;
+}
+
+.panel__state {
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lcd);
+}
+
+.panel__sub {
+  font-family: var(--font-lcd);
+  font-size: 9px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--lcd-dim);
+}
+
+/* Level meter. Static per mood — it moves when you move the room, never on
+   its own. No idle flicker anywhere on this page. */
+.meter {
+  display: flex;
+  gap: 2px;
+  align-items: flex-end;
+  height: 20px;
+}
+
+.meter__bar {
+  width: 3px;
+  background-color: var(--lcd-off);
+  transition: height var(--dur-long) var(--ease-out),
+    background-color var(--dur-long) var(--ease-out);
+}
+
+.meter__bar.is-on {
+  background-color: var(--lcd);
+}
+
+.panel__deck {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-block-start: 8px;
+}
+
+.key {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 0.7em 0.35em;
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: oklch(22% 0.008 250);
+  background-image: linear-gradient(180deg, var(--chrome-hi), var(--chrome-1) 60%, var(--chrome-2));
+  border-radius: var(--radius-sm);
+  box-shadow: inset 0 1px 0 oklch(100% 0 0 / 0.9), inset 0 -2px 3px oklch(0% 0 0 / 0.28),
+    0 1px 2px oklch(0% 0 0 / 0.4);
+  transition: transform var(--dur-micro) var(--ease-out),
+    background-image var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out),
+    box-shadow var(--dur-micro) var(--ease-out);
+}
+
+.key:hover {
+  background-image: linear-gradient(180deg, oklch(96% 0.004 250), var(--chrome-hi) 60%, var(--chrome-1));
+}
+
+.key:active {
+  transform: translateY(1px);
+}
+
+.key[aria-pressed='true'] {
+  color: var(--lcd);
+  background-image: linear-gradient(180deg, oklch(26% 0.03 140), oklch(19% 0.035 140));
+  box-shadow: inset 0 2px 5px oklch(0% 0 0 / 0.7), inset 0 0 0 1px oklch(0% 0 0 / 0.45);
+}
+
+/* --- persistent: a small dock lives on the page from the first frame, not
+   gated behind a scroll threshold or buried mid-page, so the mood is always
+   one click away. It stays a chip until asked to be more — a full-size
+   panel fixed over the page for the entire visit would eventually collide
+   with something in every section. --- */
+
+.remote {
+  position: fixed;
+  inset-block-end: clamp(0.75rem, 2.5vh, 1.5rem);
+  inset-inline-start: var(--gutter);
+  z-index: var(--z-remote);
+}
+
+.remote__chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 14px 8px 10px;
+  border-radius: var(--radius-pill);
+  color: var(--lcd);
+}
+
+.remote__dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--lcd);
+  box-shadow: 0 0 8px 1px var(--lcd);
+}
+
+.remote__chip-label {
+  font-family: var(--font-lcd);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.remote__panel {
+  position: absolute;
+  inset-block-end: calc(100% + 10px);
+  inset-inline-start: 0;
+  width: min(300px, calc(100vw - var(--gutter) * 2));
+  transform-origin: bottom left;
+}
+
+.remote__caption {
+  display: block;
+  margin-block-end: 6px;
+  padding-inline: 2px;
+}
+
+@media (max-width: 700px) {
+  .remote {
+    inset-inline-start: var(--gutter);
+  }
+  .remote__panel {
+    width: min(300px, calc(100vw - var(--gutter) * 2));
+  }
+}
+
+/* ============================================================ RULES ====== */
+/* A house's rules, not a manifesto — a short list, read in one glance. */
+
+.rules {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  margin-block-start: clamp(1.5rem, 4vh, 2.5rem);
+  border-block-start: var(--rule-hair) solid var(--hairline);
+}
+
+.rules__item {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding-block: var(--space-sm);
+  border-block-end: var(--rule-hair) solid var(--hairline);
+}
+
+.rules__n {
+  flex: none;
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  color: var(--neon);
+  transition: color var(--dur-mood) var(--ease-in-out);
+}
+
+.rules__text {
+  font-family: var(--font-display);
+  font-weight: 600;
+  font-size: clamp(1rem, 1.8vw, 1.375rem);
+  letter-spacing: -0.01em;
+  text-transform: none;
+  line-height: 1.3;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* ============================================================ MAP ======== */
+
+.map {
+  position: relative;
+  width: 100%;
+  margin-block-start: clamp(2rem, 6vh, 3.5rem);
+  border: var(--rule-hair) solid var(--glass-edge);
+  border-radius: var(--radius-panel);
+  overflow: hidden;
+  background-color: var(--room-2);
+  transition: background-color var(--dur-mood) var(--ease-in-out),
+    border-color var(--dur-mood) var(--ease-in-out);
+}
+
+.map__embed {
+  position: relative;
+  aspect-ratio: 16 / 10;
+  width: 100%;
+}
+
+.map__embed iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+  filter: grayscale(0.35) contrast(1.08) brightness(0.92) saturate(1.05);
+}
+
+.map__embed-tint {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    to top,
+    color-mix(in oklab, var(--room) 65%, transparent) 0%,
+    transparent 40%
+  );
+  mix-blend-mode: multiply;
+  opacity: 0.5;
+}
+
+.map__legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-xl);
+  justify-content: space-between;
+  padding: var(--space-md);
+  border-block-start: var(--rule-hair) solid var(--hairline);
+}
+
+/* ============================================================ BOOK ======= */
+
+.book {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  align-items: flex-start;
+}
+
+.book__terms {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs) var(--space-lg);
+  align-items: baseline;
+}
+
+.book__price {
+  font-family: var(--font-display);
+  font-weight: 700;
+  font-size: var(--text-xl);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  text-transform: uppercase;
+}
+
+/* --- booking popover: a small anchored card, not a fullscreen takeover --- */
+
+.desk-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: calc(var(--z-overlay) - 1);
+  background-color: oklch(8% 0.02 265 / 0.35);
+  backdrop-filter: blur(3px);
+}
+
+.desk {
+  position: fixed;
+  z-index: var(--z-overlay);
+  inset-block-start: calc(var(--space-xl) + env(safe-area-inset-top, 0px));
+  inset-inline-end: var(--gutter);
+  width: min(420px, calc(100vw - var(--gutter) * 2));
+  max-height: calc(100svh - var(--space-xl) * 2);
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  border-radius: var(--radius-panel);
+  transform-origin: top right;
+  color: oklch(96% 0.008 250);
+}
+
+@media (max-width: 640px) {
+  .desk {
+    inset-block: auto 0;
+    inset-inline: var(--space-xs);
+    inset-block-end: var(--space-xs);
+    width: auto;
+    max-height: min(640px, 86svh);
+    transform-origin: bottom center;
+  }
+}
+
+.desk__inner {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding: var(--space-md) var(--space-md) var(--space-lg);
+}
+
+.desk__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+}
+
+.desk__steps {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+}
+
+.step {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+}
+
+.step__q {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: clamp(1.375rem, 3.4vw, 1.875rem);
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+/* calendar */
+
+.cal {
+  width: 100%;
+}
+
+.cal__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-md);
+  padding-block-end: var(--space-xs);
+}
+
+.cal__month {
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.cal__nav {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border: var(--rule-hair) solid oklch(38% 0.02 265);
+  border-radius: 50%;
+  transition: border-color var(--dur-micro) var(--ease-out);
+}
+
+.cal__nav:hover:not(:disabled) {
+  border-color: var(--aero);
+}
+
+.cal__nav:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 2px;
+}
+
+.cal__dow {
+  padding-block: var(--space-2xs);
+  text-align: center;
+  font-family: var(--font-lcd);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: oklch(55% 0.014 250);
+}
+
+.cal__day {
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  font-variant-numeric: tabular-nums;
+  color: oklch(92% 0.008 250);
+  border: var(--rule-hair) solid transparent;
+  border-radius: 50%;
+  transition: background-color var(--dur-micro) var(--ease-out),
+    color var(--dur-micro) var(--ease-out), border-color var(--dur-micro) var(--ease-out);
+}
+
+.cal__day:hover:not(:disabled) {
+  border-color: var(--aero);
+}
+
+.cal__day:disabled {
+  color: oklch(34% 0.012 265);
+  cursor: not-allowed;
+}
+
+.cal__day[aria-pressed='true'] {
+  background-color: var(--lcd);
+  color: oklch(14% 0.03 140);
+  border-color: var(--lcd);
+}
+
+/* choice chips + counter */
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+
+.chip {
+  padding: 0.55em 0.9em;
+  font-family: var(--font-lcd);
+  font-size: var(--text-xs);
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  white-space: nowrap;
+  border-radius: var(--radius-pill);
+  border: var(--rule-hair) solid oklch(38% 0.02 265);
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.chip:hover {
+  border-color: var(--aero);
+}
+
+.chip[aria-pressed='true'] {
+  background-color: oklch(96% 0.008 250);
+  border-color: oklch(96% 0.008 250);
+  color: oklch(12% 0.02 265);
+}
+
+.counter {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+
+.counter__n {
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 2.25rem;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+  min-width: 1.8ch;
+  text-align: center;
+}
+
+.counter__btn {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  border: var(--rule-hair) solid oklch(45% 0.02 265);
+  border-radius: 50%;
+  transition: border-color var(--dur-micro) var(--ease-out),
+    background-color var(--dur-micro) var(--ease-out), color var(--dur-micro) var(--ease-out);
+}
+
+.counter__btn:hover:not(:disabled) {
+  background-color: oklch(96% 0.008 250);
+  color: oklch(12% 0.02 265);
+  border-color: oklch(96% 0.008 250);
+}
+
+.counter__btn:disabled {
+  opacity: 0.3;
+  cursor: not-allowed;
+}
+
+.desk__foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  align-items: center;
+  justify-content: space-between;
+  padding-block-start: var(--space-md);
+  border-block-start: var(--rule-hair) solid oklch(30% 0.02 265);
+}
+
+.desk__send {
+  position: relative;
+  font-family: var(--font-display);
+  font-weight: 800;
+  font-size: 1.05rem;
+  text-transform: uppercase;
+  letter-spacing: -0.01em;
+  white-space: nowrap;
+  color: oklch(98% 0 0);
+  padding-block-end: 0.15em;
+  transition: opacity var(--dur-micro) var(--ease-out);
+}
+
+.desk__send::after {
+  content: '';
+  position: absolute;
+  inset-inline: 0;
+  inset-block-end: 0;
+  height: 2px;
+  background: var(--lcd);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform var(--dur-short) var(--ease-out);
+}
+
+.desk__send:hover:not(:disabled)::after,
+.desk__send:focus-visible:not(:disabled)::after {
+  transform: scaleX(1);
+}
+
+.desk__send:disabled {
+  opacity: 0.28;
+  cursor: not-allowed;
+}
+
+.desk__done {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-sm);
+  padding-block: var(--space-md);
+}
+
+/* The desk is a fixed, narrow card — a viewport-relative CTA size (built for
+   full-width sections) overflows it. Flatten to the card's own scale. */
+.desk .cta--type {
+  font-size: 1.15rem;
+}
+
+/* ============================================================ FOOTER ===== */
+
+.mast {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-lg);
+  padding-block: clamp(3rem, 9vh, 6rem) var(--space-xl);
+}
+
+.mast__name {
+  font-family: var(--font-display);
+  font-weight: 850;
+  font-size: clamp(2.4rem, 12vw, 11.5rem);
+  line-height: 0.8;
+  letter-spacing: var(--tracking-mega);
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+  min-width: 0;
+}
+
+.mast__name sup {
+  font-size: 0.2em;
+  vertical-align: super;
+  font-weight: 500;
+}
+
+.mast__row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-md) var(--space-xl);
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.mast__links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-lg);
+}
+
+.mast__link {
+  font-family: var(--font-lcd);
+  font-size: var(--text-sm);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  white-space: nowrap;
+  color: var(--ink-dim);
+  padding-block-end: 2px;
+  border-block-end: var(--rule-hair) solid transparent;
+  transition: color var(--dur-micro) var(--ease-out),
+    border-color var(--dur-micro) var(--ease-out);
+}
+
+.mast__link:hover,
+.mast__link:focus-visible {
+  color: var(--ink);
+  border-block-end-color: var(--aero);
+}
+
+/* ============================================================ REVEAL ===== */
+/* Used on the section heads and the gallery. Everything else is simply
+   there when you arrive. */
+
+.rv {
+  opacity: 0;
+  transform: translateY(16px);
+  transition: opacity 700ms var(--ease-out), transform 700ms var(--ease-out);
+}
+
+.rv.is-in {
+  opacity: 1;
+  transform: none;
+}
+
+.no-scroll {
+  overflow: hidden;
+}
+
+/* ============================================================ MOTION ===== */
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  *,
+  *::before,
+  *::after {
+    animation-duration: 150ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 150ms !important;
+  }
+  .rv {
+    transform: none;
+  }
+  .cursor {
+    display: none;
+  }
+  body.has-cursor,
+  body.has-cursor a,
+  body.has-cursor button,
+  body.has-cursor [data-cursor] {
+    cursor: auto;
+  }
+}

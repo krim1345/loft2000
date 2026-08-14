@@ -1,0 +1,26 @@
+[
+  {
+    "date": "2026-08-15",
+    "macrostructure": "bespoke (photographic-led, 7 movements)",
+    "theme": "custom (revised)",
+    "theme_axes": "dark / rounded-grotesk / dual warm+aero",
+    "vibe": "2003 Brooklyn loft, Frutiger Aero glass, chrome and neon",
+    "genre": "atmospheric",
+    "nav": "N9 edge-aligned, morphing to aero-glass docked rail",
+    "footer": "Ft1 mast-headed",
+    "enrichment": "real photography (3 liminal interiors, draggable gallery) + measured floor plan + real Google Maps embed + one supplied aqua-reel clip as screen content",
+    "brief": "LOFT 2000 revision: self-hosted non-default type (Unbounded/Hanken Grotesk/Space Mono), cursor squash-stretch physics, Frutiger Aero glass treatment throughout, persistent mood dock, compact anchored booking popover, gallery + fixed-preview details replacing the video-still collage, condensed rules, real map"
+  },
+  {
+    "date": "2026-08-15",
+    "macrostructure": "bespoke (photographic-led, 9 movements)",
+    "theme": "custom",
+    "theme_axes": "dark / variable-condensed-grotesk / warm",
+    "vibe": "2003 Brooklyn loft, Tokyo neon, chrome and CRT",
+    "genre": "atmospheric",
+    "nav": "N9 edge-aligned, morphing to a docked rail",
+    "footer": "Ft1 mast-headed",
+    "enrichment": "Tier B hand-built SVG (measured floor plan + drawn map) + single supplied clip",
+    "brief": "LOFT 2000 · fictional rentable Y2K loft, Brooklyn"
+  }
+]

@@ -1,0 +1,173 @@
+/* Hallmark · genre: atmospheric · macrostructure: bespoke (photographic-led, gallery + index)
+ * theme: custom · vibe: "2003 Brooklyn loft, Frutiger Aero glass, chrome and neon"
+ * paper oklch(13% 0.02 265) dark · accent-warm oklch(66% 0.24 12) · accent-aero oklch(70% 0.13 224) · lcd oklch(86% 0.21 135)
+ * axes: paper-band=dark · display-style=rounded-grotesk · accent-hue=dual(warm+cool)
+ * display: Unbounded (self-hosted) · body: Hanken Grotesk (self-hosted) · utility: Space Mono (self-hosted)
+ * nav: N9→N10 edge-aligned morphing rail · footer: Ft1 mast-headed
+ * enrichment: real photography (liminal interiors) + one aqua-reel clip as "what's on the screens" + hero ambient loop
+ * pre-emit critique: P5 H5 E4 S5 R4 V5
+ */
+
+:root {
+  /* ---- Type roles: self-hosted, away from the Inter/Archivo default pair - */
+  --font-display: 'Unbounded', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  --font-body: 'Hanken Grotesk', -apple-system, BlinkMacSystemFont, 'Segoe UI', Helvetica, Arial, sans-serif;
+  --font-lcd: 'Space Mono', ui-monospace, 'SF Mono', Menlo, Consolas, monospace;
+
+  /* ---- Type scale ------------------------------------------------------- */
+  /* Unbounded runs roughly 25% wider per character than a condensed grotesk
+     — these clamps are measured against its actual advance widths (canvas
+     measureText, "WELCOME" at 240px = 1635px vs. 1307px for a condensed
+     face) so the longest single word in a headline never hits
+     overflow-wrap mid-word at any viewport in range. */
+  --text-mega: clamp(2.4rem, 0.3rem + 9.5vw, 10rem);
+  --text-display: clamp(2.1rem, 6.6vw, 7.25rem);
+  --text-display-s: clamp(1.75rem, 4.8vw, 4.5rem);
+  --text-xl: clamp(1.5rem, 3vw, 2.75rem);
+  --text-lg: clamp(1.125rem, 1.6vw, 1.5rem);
+  --text-md: 1rem;
+  --text-sm: 0.8125rem;
+  --text-xs: 0.6875rem;
+
+  --tracking-mega: -0.055em;
+  --tracking-display: -0.045em;
+  --tracking-label: 0.16em;
+  --leading-mega: 0.8;
+
+  /* ---- Space (4pt) ------------------------------------------------------ */
+  --space-2xs: 0.25rem;
+  --space-xs: 0.5rem;
+  --space-sm: 0.75rem;
+  --space-md: 1.25rem;
+  --space-lg: 2rem;
+  --space-xl: 3.5rem;
+  --space-2xl: 6rem;
+  --space-3xl: 10rem;
+  --gutter: clamp(1.25rem, 4vw, 3.5rem);
+
+  /* ---- Motion ----------------------------------------------------------- */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-in: cubic-bezier(0.7, 0, 0.84, 0);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --dur-micro: 120ms;
+  --dur-short: 220ms;
+  --dur-long: 420ms;
+  --dur-mood: 900ms;
+
+  /* ---- Rules, radii, elevation ------------------------------------------ */
+  --rule-hair: 1px;
+  --rule-thick: 2px;
+  --radius-xs: 2px;
+  --radius-sm: 4px;
+  --radius-panel: 7px;
+  --radius-pill: 999px;
+
+  --z-page: 1;
+  --z-raised: 10;
+  --z-rail: 60;
+  --z-remote: 70;
+  --z-overlay: 80;
+  --z-grain: 90;
+  --z-cursor: 100;
+
+  /* ---- Hardware: constant across every mood ----------------------------- */
+  /* The electronics do not care what time it is. This is the one saturated
+     colour that never moves — it is what makes the mood shift legible. */
+  --lcd: oklch(86% 0.21 135);
+  --lcd-dim: oklch(60% 0.16 135);
+  --lcd-off: oklch(33% 0.06 135);
+  --lcd-bed: oklch(24% 0.05 140);
+
+  /* ---- Aero: the cool half of the identity ------------------------------ */
+  /* The warm --neon is the loft's own lamp light. --aero is the other half
+     of the brief — glossy sky-blue plastic, glass block, chlorinated-pool
+     light. Constant across moods, same as the hardware: glass doesn't warm
+     up at sunset, it reflects whatever is behind it. */
+  --aero: oklch(74% 0.135 224);
+  --aero-deep: oklch(48% 0.15 234);
+  --aero-pale: oklch(92% 0.045 210);
+  --glass-hi: oklch(98% 0.02 200 / 0.5);
+  --glass-tint: oklch(62% 0.09 220 / 0.16);
+  --glass-edge: oklch(88% 0.05 210 / 0.4);
+  --glass-shadow: 0 14px 34px oklch(8% 0.03 240 / 0.35);
+
+  /* Text over the hero footage, which stays night-blue in every mood. */
+  --on-footage: oklch(99% 0 0);
+  --on-footage-dim: oklch(88% 0.01 250);
+  --footage-shadow: 0 1px 14px oklch(10% 0.02 265 / 0.75);
+
+  --chrome-hi: oklch(92% 0.004 250);
+  --chrome-1: oklch(78% 0.005 250);
+  --chrome-2: oklch(62% 0.006 250);
+  --chrome-3: oklch(45% 0.007 250);
+  --chrome-lo: oklch(28% 0.008 250);
+
+  /* ---- Mood-driven light: defaults are 02:00 AM ------------------------- */
+  --room: oklch(13% 0.02 265);
+  --room-2: oklch(18% 0.026 265);
+  --room-3: oklch(24% 0.03 265);
+  --ink: oklch(95% 0.008 250);
+  --ink-dim: oklch(70% 0.012 250);
+  --ink-faint: oklch(52% 0.014 250);
+  --glow: oklch(74% 0.135 68);
+  --neon: oklch(66% 0.24 12);
+  --hairline: oklch(38% 0.02 265);
+
+  /* Treatment applied over the footage in this mood */
+  --video-tint: oklch(14% 0.035 268 / 0.42);
+  --video-bright: 0.92;
+  --video-contrast: 1.14;
+  --video-sat: 1.06;
+  --vignette: 0.72;
+  --grain-opacity: 0.055;
+
+  --focus-ring: var(--lcd);
+}
+
+/* 22:00 → 05:00. Cold blue ground, warm lamps, the sign across the street on. */
+[data-mood='night'] {
+  color-scheme: dark;
+}
+
+/* Golden hour. Curtains half-drawn, the room takes the colour of the window. */
+[data-mood='sunset'] {
+  color-scheme: dark;
+  --room: oklch(21% 0.045 44);
+  --room-2: oklch(28% 0.058 42);
+  --room-3: oklch(35% 0.065 44);
+  --ink: oklch(96% 0.015 62);
+  --ink-dim: oklch(76% 0.03 55);
+  --ink-faint: oklch(58% 0.04 50);
+  --glow: oklch(80% 0.165 62);
+  --neon: oklch(64% 0.2 27);
+  --hairline: oklch(45% 0.05 45);
+
+  --video-tint: oklch(38% 0.1 48 / 0.34);
+  --video-bright: 1.02;
+  --video-contrast: 1.06;
+  --video-sat: 1.18;
+  --vignette: 0.5;
+  --grain-opacity: 0.045;
+}
+
+/* Late morning, curtains open. The only state where the loft looks like an
+   apartment instead of a venue — which is exactly why it is worth showing. */
+[data-mood='day'] {
+  color-scheme: light;
+  --room: oklch(89% 0.011 232);
+  --room-2: oklch(94% 0.008 232);
+  --room-3: oklch(84% 0.013 232);
+  --ink: oklch(19% 0.02 252);
+  --ink-dim: oklch(40% 0.018 252);
+  --ink-faint: oklch(58% 0.016 252);
+  --glow: oklch(88% 0.045 232);
+  --neon: oklch(53% 0.19 22);
+  --hairline: oklch(72% 0.012 232);
+
+  --video-tint: oklch(92% 0.015 230 / 0.2);
+  --video-bright: 1.18;
+  --video-contrast: 0.94;
+  --video-sat: 0.82;
+  --vignette: 0.16;
+  --grain-opacity: 0.03;
+}

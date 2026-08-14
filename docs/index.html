@@ -1,0 +1,931 @@
+<!doctype html>
+<html lang="en" data-mood="night">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<title>LOFT 2000® — Brooklyn</title>
+<meta name="description" content="A private loft in Brooklyn that never left 2003. From $450 a night.">
+<meta name="theme-color" content="#0b0e15">
+
+<!-- Self-hosted fonts — no runtime Google Fonts dependency. Paths match the
+     root-absolute /fonts/ that fonts.css actually requests. -->
+<link rel="preload" as="font" href="/fonts/Unbounded-800.woff2" type="font/woff2" crossorigin>
+<link rel="preload" as="font" href="/fonts/HankenGrotesk-400.woff2" type="font/woff2" crossorigin>
+
+<link rel="stylesheet" href="styles/fonts.css">
+<link rel="stylesheet" href="styles/tokens.css">
+<link rel="stylesheet" href="styles/loft.css">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+
+<style>
+  /* The handful of Tailwind utilities the components use, hand-written so
+     this file needs no build step and no network. */
+  .fixed { position: fixed; }
+  .inset-0 { inset: 0; }
+  .overflow-hidden { overflow: hidden; }
+  .bg-black { background-color: #000; }
+  .w-full { width: 100%; }
+  .h-full { height: 100%; }
+  .object-cover { object-fit: cover; }
+
+  [hidden] { display: none !important; }
+
+  :root {
+    --grain-src: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='190' height='190'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='190' height='190' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /* Hero entrance — the one orchestrated moment on load. */
+  .enter {
+    opacity: 0;
+    transform: translateY(40px);
+    animation: enter 1s var(--ease-out) forwards;
+    animation-delay: calc(var(--i, 0) * 150ms + 150ms);
+  }
+  @keyframes enter { to { opacity: 1; transform: none; } }
+
+  .stack { display: grid; gap: 1.25rem; }
+  .stack--end { justify-items: end; gap: 0.4rem; }
+  .cal__arrows { display: flex; gap: 6px; }
+
+  /* Sheet link stagger (mirrors the React stagger via motion variants) */
+  .sheet__link, .sheet__head, .sheet__foot {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  .sheet.is-open .sheet__head { animation: sheetIn 0.42s var(--ease-out) forwards; animation-delay: 80ms; }
+  .sheet.is-open .sheet__link { animation: sheetIn 0.42s var(--ease-out) forwards; }
+  .sheet.is-open .sheet__link:nth-child(1) { animation-delay: 140ms; }
+  .sheet.is-open .sheet__link:nth-child(2) { animation-delay: 200ms; }
+  .sheet.is-open .sheet__link:nth-child(3) { animation-delay: 260ms; }
+  .sheet.is-open .sheet__foot { animation: sheetIn 0.42s var(--ease-out) forwards; animation-delay: 320ms; }
+  @keyframes sheetIn { to { opacity: 1; transform: none; } }
+
+  /* Remote panel toggle */
+  .remote__panel {
+    opacity: 0;
+    transform: scale(0.9) translateY(8px);
+    transition: opacity 0.26s var(--ease-out), transform 0.26s var(--ease-out);
+    pointer-events: none;
+  }
+  .remote__panel.is-open {
+    opacity: 1;
+    transform: none;
+    pointer-events: auto;
+  }
+
+  /* Booking popover entrance */
+  .desk { opacity: 0; transform: scale(0.92) translateY(-10px); }
+  .desk.is-open { opacity: 1; transform: none; transition: opacity 0.34s var(--ease-out), transform 0.34s var(--ease-out); }
+  .desk-backdrop { opacity: 0; transition: opacity 0.25s var(--ease-out); }
+  .desk-backdrop.is-open { opacity: 1; }
+
+  .desk__done, .desk__form { transition: opacity 0.2s var(--ease-out); }
+
+  /* Gallery drag track */
+  .gallery__track { transition: transform 0.4s var(--ease-out); touch-action: pan-y; }
+  .gallery__track.is-dragging { transition: none; }
+
+  /* Preview crossfade */
+  .details__preview-layer {
+    position: absolute; inset: 0; opacity: 0;
+    transition: opacity 0.32s var(--ease-out);
+  }
+  .details__preview-layer.is-shown { opacity: 1; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .enter { transform: none; animation-duration: 150ms; }
+    .sheet__link, .sheet__head, .sheet__foot { transform: none; }
+  }
+</style>
+</head>
+
+<body>
+<a class="skip-link" href="#space">Skip to the loft</a>
+<div class="grain" aria-hidden="true"></div>
+
+<div class="cursor" id="cursor" aria-hidden="true"><span class="cursor__label" id="cursorLabel"></span></div>
+
+<!-- ================================================================ RAIL -->
+<header class="rail" id="rail">
+  <a class="wordmark" href="#top">Loft 2000<sup>®</sup></a>
+  <nav class="rail__links" aria-label="Sections">
+    <a class="rail__link" href="#space">Space</a>
+    <a class="rail__link" href="#details">Details</a>
+    <a class="rail__link" href="#location">Location</a>
+  </nav>
+  <div class="rail__right">
+    <button type="button" class="cta cta--solid" data-book data-cursor="Book"><span>Book<span class="cta__long"> the loft</span></span><span aria-hidden="true">→</span></button>
+    <button type="button" class="rail__burger" id="burger" aria-label="Open menu" aria-expanded="false">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M4 6h16M4 12h16M4 18h16"/></svg>
+    </button>
+  </div>
+</header>
+
+<div class="sheet" id="sheet" role="dialog" aria-modal="true" aria-label="Menu" hidden>
+  <div class="sheet__head">
+    <span class="wordmark">Loft 2000<sup>®</sup></span>
+    <button type="button" class="rail__burger" id="sheetClose" aria-label="Close menu">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+    </button>
+  </div>
+  <nav class="sheet__links" aria-label="Sections">
+    <a class="sheet__link" href="#space" data-sheet-link>Space</a>
+    <a class="sheet__link" href="#details" data-sheet-link>Details</a>
+    <a class="sheet__link" href="#location" data-sheet-link>Location</a>
+  </nav>
+  <div class="sheet__foot">
+    <span class="label">Brooklyn · New York</span>
+    <button type="button" class="cta cta--type" data-book data-sheet-link><span class="cta__label">Book the loft →</span><span class="cta__bar" aria-hidden="true"></span></button>
+  </div>
+</div>
+
+<!-- ============================================================== REMOTE -->
+<div class="remote" id="remote">
+  <div class="remote__panel glass" id="remotePanel" hidden style="padding:10px;border-radius:var(--radius-panel)">
+    <span class="label remote__caption" id="remote-label">Set the mood</span>
+    <div id="panelSlot"></div>
+  </div>
+  <button type="button" class="remote__chip glass" id="remoteChip" aria-expanded="false" data-cursor="Set">
+    <span class="remote__dot" aria-hidden="true"></span>
+    <span class="remote__chip-label" id="remoteChipLabel">AFTER HOURS</span>
+  </button>
+</div>
+
+<main>
+
+<!-- ================================================================ HERO -->
+<section class="hero" id="top">
+  <div class="hero__ground fixed inset-0 overflow-hidden bg-black" aria-hidden="true">
+    <div class="plate w-full h-full">
+      <video class="plate__video w-full h-full object-cover" autoplay muted loop playsinline preload="auto" fetchpriority="high" style="object-position:50% 30%" src="hero.mp4"></video>
+      <div class="plate__tint"></div>
+      <div class="plate__vignette"></div>
+    </div>
+    <div class="hero__scrim"></div>
+  </div>
+
+  <div class="hero__inner">
+    <h1 class="display display--mega hero__type">
+      <span class="hero__line enter" style="--i:0">Welcome</span>
+      <span class="hero__line enter" style="--i:1">to 2003.</span>
+    </h1>
+
+    <div class="hero__meta">
+      <div class="stack enter" style="--i:2.6">
+        <p class="hero__sub">A private loft for nights worth remembering.</p>
+        <div><a class="cta cta--type" href="#space" data-cursor="Explore"><span class="cta__label">Enter the loft →</span><span class="cta__bar" aria-hidden="true"></span></a></div>
+      </div>
+      <div class="stack stack--end enter" style="--i:3.6">
+        <span class="label hero__cue tabular">Four floors up · no lift · 20 people</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== SPACE -->
+<section class="movement pad-tall" id="space">
+  <div class="shell">
+    <div class="rv head head--wide" data-reveal>
+      <h2 class="display display--xl">Not an<br>event space.</h2>
+      <p class="head__note">A place that already has a story. Someone lived here through every year the furniture remembers, and none of it was bought to be photographed.</p>
+    </div>
+
+    <div class="rv" data-reveal>
+      <div class="gallery" id="gallery">
+        <div class="gallery__stage" id="galleryStage">
+          <div class="gallery__track" id="galleryTrack"></div>
+          <button type="button" class="gallery__arrow gallery__arrow--prev" id="galleryPrev" aria-label="Previous photo" data-cursor="View">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+          </button>
+          <button type="button" class="gallery__arrow gallery__arrow--next" id="galleryNext" aria-label="Next photo" data-cursor="View">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+          </button>
+        </div>
+        <div class="gallery__strip" id="galleryStrip" role="tablist" aria-label="Photos"></div>
+      </div>
+    </div>
+
+    <div class="rv plan-block" data-reveal data-cursor="View">
+      <figure class="frame plan">
+        <svg class="plan__svg" viewBox="96 66 1074 636" role="img" aria-labelledby="plan-title">
+          <title id="plan-title">Measured plan of the loft: 14.2 by 7.3 metres, kitchen at the north-west corner, bathroom south-west, full-height glazing and a balcony along the south-west wall, two original columns, and a seating group facing the television.</title>
+          <g class="plan__dim">
+            <path d="M150 96 L1060 96 M150 88 L150 104 M1060 88 L1060 104"/>
+            <path d="M116 130 L116 600 M108 130 L124 130 M108 600 L124 600"/>
+          </g>
+          <text class="plan__ink" x="576" y="86" text-anchor="middle">14.2 m</text>
+          <text class="plan__ink" transform="translate(108 380) rotate(-90)" text-anchor="middle">7.3 m</text>
+          <rect class="plan__wall" x="150" y="130" width="910" height="470"/>
+          <g class="plan__glass">
+            <path d="M1060 130 L1060 372 M1060 452 L1060 600"/>
+            <path d="M1052 130 L1052 372 M1052 452 L1052 600"/>
+          </g>
+          <g class="plan__furn" stroke-dasharray="5 4"><rect x="1060" y="352" width="86" height="120"/></g>
+          <path class="plan__inner" d="M1146 352 L1146 472"/>
+          <rect class="plan__inner" x="150" y="130" width="270" height="140"/>
+          <rect class="plan__fill" x="158" y="242" width="254" height="20"/>
+          <path class="plan__furn" d="M300 242 L300 262 M356 242 L356 262"/>
+          <text class="plan__ink plan__ink--strong" x="172" y="164">Kitchen</text>
+          <text class="plan__ink" x="172" y="184">Gas · tiled · loud</text>
+          <rect class="plan__inner" x="150" y="460" width="150" height="140"/>
+          <text class="plan__ink plan__ink--strong" x="168" y="492">Bath</text>
+          <path class="plan__furn" d="M150 320 L220 320 M150 320 A70 70 0 0 1 220 390"/>
+          <text class="plan__ink" x="236" y="336">Entry · buzzer 4R</text>
+          <rect class="plan__fill" x="490" y="292" width="22" height="22"/>
+          <rect class="plan__fill" x="490" y="460" width="22" height="22"/>
+          <path class="plan__lead" d="M512 303 L600 268"/>
+          <text class="plan__ink" x="606" y="264">Columns, original</text>
+          <rect class="plan__furn" x="262" y="322" width="170" height="108" rx="3"/>
+          <path class="plan__furn" d="M262 358 L242 358 M262 394 L242 394 M432 358 L452 358 M432 394 L452 394"/>
+          <text class="plan__ink" x="272" y="452">Table, seats ten</text>
+          <rect class="plan__furn" x="620" y="376" width="240" height="86" rx="4"/>
+          <path class="plan__furn" d="M620 462 L860 462"/>
+          <text class="plan__ink" x="632" y="404">Sofa · seats six</text>
+          <rect class="plan__furn" x="880" y="392" width="70" height="70" rx="3"/>
+          <rect class="plan__fill" x="700" y="524" width="100" height="44"/>
+          <path class="plan__lead" d="M750 524 L750 496"/>
+          <text class="plan__ink plan__ink--strong" x="750" y="490" text-anchor="middle">CRT + stand</text>
+          <rect class="plan__furn" x="646" y="524" width="28" height="52"/>
+          <rect class="plan__furn" x="826" y="524" width="28" height="52"/>
+          <text class="plan__ink" x="866" y="560">Speakers</text>
+          <rect class="plan__furn" stroke-dasharray="4 5" x="700" y="292" width="330" height="68" rx="34"/>
+          <text class="plan__ink" x="865" y="332" text-anchor="middle">Open floor</text>
+          <rect class="plan__furn" x="552" y="176" width="86" height="62" rx="2"/>
+          <path class="plan__lead" d="M638 206 L700 206"/>
+          <text class="plan__ink" x="706" y="202">Record player</text>
+          <text class="plan__ink" transform="translate(1034 300) rotate(-90)" text-anchor="middle">Glazing, floor to ceiling</text>
+          <path class="plan__lead" d="M1103 352 L1103 316"/>
+          <g class="plan__dim"><path d="M1150 150 L1150 96 M1144 108 L1150 96 L1156 108"/></g>
+          <text class="plan__ink" x="1150" y="168" text-anchor="middle">N</text>
+          <g class="plan__dim"><path d="M150 656 L470 656 M150 648 L150 664 M310 650 L310 662 M470 648 L470 664"/></g>
+          <rect class="plan__fill" x="150" y="652" width="160" height="8"/>
+          <text class="plan__ink" x="150" y="682">0</text>
+          <text class="plan__ink" x="470" y="682" text-anchor="end">5 m</text>
+          <text class="plan__ink plan__ink--strong" x="1060" y="668" text-anchor="end">Fourth floor · 4R · no lift</text>
+          <text class="plan__ink" x="1060" y="688" text-anchor="end">103 m² · 20 people</text>
+        </svg>
+        <figcaption class="frame__cap">Measured on site, 2003</figcaption>
+      </figure>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= DETAILS -->
+<section class="movement pad-mid" id="details">
+  <div class="shell">
+    <div class="rv head head--wide" data-reveal>
+      <h2 class="display display--xl">Things<br>you&rsquo;ll find here.</h2>
+    </div>
+    <div class="details">
+      <div class="index is-probing" id="index" role="tablist" aria-label="What's in the loft"></div>
+      <div class="details__preview" id="detailsPreview"></div>
+    </div>
+  </div>
+</section>
+
+<!-- =============================================================== RULES -->
+<section class="movement pad-tight">
+  <div class="shell">
+    <div class="rv head head--wide" data-reveal>
+      <h2 class="display display--lg">The apartment has rules.</h2>
+    </div>
+    <ol class="rules" id="rules"></ol>
+  </div>
+</section>
+
+<!-- ============================================================ LOCATION -->
+<section class="movement pad-mid" id="location">
+  <div class="shell">
+    <div class="rv head head--wide" data-reveal>
+      <h2 class="display display--xl">Come find us.</h2>
+      <p class="display display--lg">Brooklyn<br>New York</p>
+    </div>
+
+    <div class="map">
+      <div class="map__embed">
+        <iframe title="Loft 2000 — approximate area, Williamsburg, Brooklyn" src="https://www.google.com/maps?q=North+9th+St+%26+Bedford+Ave,+Brooklyn,+NY&z=15&hl=en&output=embed" loading="lazy" referrerpolicy="no-referrer-when-downgrade" allowfullscreen></iframe>
+        <div class="map__embed-tint" aria-hidden="true"></div>
+      </div>
+      <div class="map__legend">
+        <span class="label">15 min from Manhattan</span>
+        <span class="label">L train to Bedford Av · 4 min on foot</span>
+        <span class="label">Full address once the date is confirmed</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============================================================= BOOKING -->
+<section class="movement pad-tall">
+  <div class="shell book">
+    <div class="rv head head--wide" data-reveal>
+      <h2 class="display display--xl">Make<br>a night<br>of it.</h2>
+    </div>
+    <p class="body-copy">Available for shoots, dinners, parties, music sessions and whatever happens after.</p>
+    <button type="button" class="cta cta--huge" data-book data-cursor="Book"><span class="cta__label">Book the loft →</span><span class="cta__bar" aria-hidden="true"></span></button>
+    <div class="book__terms">
+      <span class="book__price tabular">From $450 / night</span>
+      <span class="label">Maximum capacity: 20 people</span>
+    </div>
+  </div>
+</section>
+
+</main>
+
+<!-- ================================================================ MAST -->
+<footer class="movement">
+  <div class="shell mast">
+    <p class="mast__name">Loft 2000<sup>®</sup></p>
+    <hr class="rule">
+    <div class="mast__row">
+      <span class="label">Brooklyn, NY</span>
+      <nav class="mast__links" aria-label="Elsewhere">
+        <a class="mast__link" href="#top">Instagram</a>
+        <a class="mast__link" href="mailto:nights@loft2000.nyc">Contact</a>
+        <button type="button" class="mast__link" data-book data-cursor="Book">Book</button>
+      </nav>
+      <span class="label tabular">© 2003—2026 Loft 2000</span>
+    </div>
+  </div>
+</footer>
+
+<!-- ================================================================ DESK -->
+<div class="desk-backdrop" id="deskBackdrop" hidden></div>
+<section class="desk glass" id="desk" role="dialog" aria-modal="true" aria-label="Request a date" hidden>
+  <div class="desk__inner">
+    <div class="desk__head">
+      <span class="wordmark">Loft 2000<sup>®</sup></span>
+      <button type="button" class="rail__burger" id="deskClose" aria-label="Close">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M6 6l12 12M18 6L6 18"/></svg>
+      </button>
+    </div>
+
+    <div id="deskForm" class="desk__form">
+      <div class="desk__steps">
+        <div class="step">
+          <h2 class="step__q">When are we doing this?</h2>
+          <div class="cal">
+            <div class="cal__head">
+              <span class="cal__month tabular" id="calMonth"></span>
+              <span class="cal__arrows">
+                <button type="button" class="cal__nav" id="calPrev" aria-label="Previous month">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+                <button type="button" class="cal__nav" id="calNext" aria-label="Next month">
+                  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 18l6-6-6-6"/></svg>
+                </button>
+              </span>
+            </div>
+            <div class="cal__grid" id="calGrid"></div>
+          </div>
+        </div>
+
+        <div class="step" id="stepGuests" hidden>
+          <h2 class="step__q">How many people?</h2>
+          <div class="counter">
+            <button type="button" class="counter__btn" id="guestsDown" aria-label="One fewer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M5 12h14"/></svg>
+            </button>
+            <span class="counter__n tabular" id="guestsN">12</span>
+            <button type="button" class="counter__btn" id="guestsUp" aria-label="One more">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><path d="M12 5v14M5 12h14"/></svg>
+            </button>
+            <span class="label" id="guestsNote">Holds 20</span>
+          </div>
+        </div>
+
+        <div class="step" id="stepOccasion" hidden>
+          <h2 class="step__q">What&rsquo;s the occasion?</h2>
+          <div class="chips" id="chips"></div>
+        </div>
+      </div>
+
+      <div class="desk__foot">
+        <span class="label label--lcd tabular" id="deskSummary">Pick a night</span>
+        <button type="button" class="desk__send" id="deskSend" disabled>Request →</button>
+      </div>
+    </div>
+
+    <div class="desk__done" id="deskDone" hidden>
+      <p class="label label--lcd">Request logged · no card charged</p>
+      <h2 class="step__q">We&rsquo;ll write back today.</h2>
+      <p class="body-copy" id="doneLine" style="font-size:var(--text-md)"></p>
+      <div><button type="button" class="cta cta--type" id="doneBack"><span class="cta__label">Back to the loft →</span><span class="cta__bar" aria-hidden="true"></span></button></div>
+    </div>
+  </div>
+</section>
+
+<script>
+(function () {
+  'use strict';
+
+  var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var fine = window.matchMedia('(pointer: fine)').matches;
+  var $ = function (sel, root) { return (root || document).querySelector(sel); };
+
+  /* ---------------------------------------------------------- content --- */
+
+  var MOODS = [
+    { id: 'day',    key: 'DAY',      clock: '11:40', suffix: 'AM', state: 'Curtains open', sub: 'Quiet · nobody here yet' },
+    { id: 'sunset', key: 'SUNSET',   clock: '07:52', suffix: 'PM', state: 'Golden hour',   sub: 'Filling up · first records on' },
+    { id: 'night',  key: '02:00 AM', clock: '02:37', suffix: 'AM', state: 'After hours',   sub: 'Full · nobody wants to leave' }
+  ];
+
+  var LEVELS = {
+    day:    [14, 22, 11, 26, 17, 20, 9, 24, 13, 19, 8, 16],
+    sunset: [40, 55, 32, 61, 44, 50, 28, 58, 36, 47, 25, 42],
+    night:  [72, 88, 54, 96, 63, 80, 45, 91, 58, 74, 40, 66]
+  };
+
+  var GALLERY = [
+    { src: 'gallery/jacuzzi.jpg', title: 'The tub room', note: 'Black tile · always warm' },
+    { src: 'gallery/glassblock.jpg', title: 'The glass wall', note: 'Cobalt at dusk · original 1978 block' },
+    { src: 'gallery/lounge.jpg', title: 'The blue room', note: 'Leather · low light · nobody remembers whose idea it was' }
+  ];
+
+  var OBJECTS = [
+    { name: 'CRT TV',           spec: 'Trinitron · 14 inch',        src: 'gallery/lounge.jpg' },
+    { name: 'Leather sofa',     spec: 'Brown · seats six',          src: 'gallery/lounge.jpg' },
+    { name: 'CD player',        spec: 'Five-disc carousel',         t: 2.7 },
+    { name: 'The tub',          spec: 'Jets on request',            src: 'gallery/jacuzzi.jpg' },
+    { name: 'Glass block wall', spec: 'Original · 1978',            src: 'gallery/glassblock.jpg' },
+    { name: 'Neon light',       spec: 'Red · always on',            t: 19.2 },
+    { name: 'Polaroid wall',    spec: '600 film · bring yours',     t: 15.9 },
+    { name: 'Record player',    spec: 'Belt drive · 33 and 45',     t: 12.6 }
+  ];
+
+  var RULES = [
+    'No fluorescent lighting.',
+    'Shoes stay on.',
+    'Someone always controls the music.',
+    'The last person leaving gets the aux.',
+    'If the sun is up, you stayed too long.'
+  ];
+
+  var OCCASIONS = ['Party', 'Photo shoot', 'Dinner', 'Music', 'Film', 'Other'];
+  var CLIP = 'loft.mp4';
+
+  function tape(t) { return 'Tape · 00:' + String(Math.round(t)).padStart(2, '0'); }
+
+  /* ------------------------------------------------------------- mood --- */
+
+  var mood = 'night';
+
+  function panelMarkup() {
+    var bars = '';
+    for (var i = 0; i < 12; i++) bars += '<span class="meter__bar"></span>';
+    var keys = MOODS.map(function (m) {
+      return '<button type="button" class="key" data-mood-key="' + m.id + '">' + m.key + '</button>';
+    }).join('');
+
+    return '<div class="panel" data-cursor="Set">' +
+      '<div class="panel__screen">' +
+        '<span class="panel__time tabular"><span data-clock></span><span class="panel__sub"> <span data-suffix></span></span></span>' +
+        '<div class="meter" aria-hidden="true">' + bars + '</div>' +
+        '<span class="panel__stack"><span class="panel__state" data-state></span></span>' +
+      '</div>' +
+      '<div class="panel__deck" role="group" aria-labelledby="remote-label">' + keys + '</div>' +
+    '</div>';
+  }
+
+  $('#panelSlot').innerHTML = panelMarkup();
+
+  function paintPanel() {
+    var active = MOODS.filter(function (m) { return m.id === mood; })[0];
+    var levels = LEVELS[mood];
+    var root = $('#panelSlot');
+
+    $('[data-clock]', root).textContent = active.clock;
+    $('[data-suffix]', root).textContent = active.suffix;
+    $('[data-state]', root).textContent = active.state;
+    $('#remoteChipLabel').textContent = active.key;
+
+    var bars = root.querySelectorAll('.meter__bar');
+    for (var i = 0; i < bars.length; i++) {
+      bars[i].style.height = levels[i] + '%';
+      bars[i].classList.toggle('is-on', levels[i] > 50);
+    }
+
+    var keys = root.querySelectorAll('[data-mood-key]');
+    for (var k = 0; k < keys.length; k++) {
+      keys[k].setAttribute('aria-pressed', String(keys[k].getAttribute('data-mood-key') === mood));
+    }
+  }
+
+  function setMood(next) {
+    mood = next;
+    document.documentElement.setAttribute('data-mood', next);
+    paintPanel();
+  }
+
+  paintPanel();
+
+  document.addEventListener('click', function (e) {
+    var key = e.target.closest ? e.target.closest('[data-mood-key]') : null;
+    if (key) setMood(key.getAttribute('data-mood-key'));
+  });
+
+  /* remote chip <-> panel toggle */
+  var remotePanel = $('#remotePanel');
+  var remoteChip = $('#remoteChip');
+  var remoteOpen = false;
+
+  function setRemoteOpen(open) {
+    remoteOpen = open;
+    remoteChip.setAttribute('aria-expanded', String(open));
+    if (open) {
+      remotePanel.hidden = false;
+      requestAnimationFrame(function () { remotePanel.classList.add('is-open'); });
+    } else {
+      remotePanel.classList.remove('is-open');
+      setTimeout(function () { if (!remoteOpen) remotePanel.hidden = true; }, 260);
+    }
+  }
+
+  remoteChip.addEventListener('click', function () { setRemoteOpen(!remoteOpen); });
+  document.addEventListener('click', function (e) {
+    if (!remoteOpen) return;
+    if (e.target.closest('#remote')) return;
+    setRemoteOpen(false);
+  });
+
+  /* ------------------------------------------------------------ rules --- */
+
+  $('#rules').innerHTML = RULES.map(function (rule, i) {
+    return '<li class="rules__item"><span class="rules__n tabular">' +
+      String(i + 1).padStart(2, '0') + '</span><p class="rules__text">' + rule + '</p></li>';
+  }).join('');
+
+  /* ----------------------------------------------------------- gallery -- */
+
+  var gIndex = 0;
+  var gTrack = $('#galleryTrack');
+  var gStage = $('#galleryStage');
+  var gStrip = $('#galleryStrip');
+
+  gTrack.innerHTML = GALLERY.map(function (item) {
+    return '<div class="gallery__slide"><img class="gallery__img" src="' + item.src + '" alt="' + item.title + '" draggable="false">' +
+      '<div class="gallery__cap"><span class="gallery__cap-title">' + item.title + '</span><span class="gallery__cap-note">' + item.note + '</span></div></div>';
+  }).join('');
+
+  gStrip.innerHTML = GALLERY.map(function (item, i) {
+    return '<button type="button" class="gallery__thumb' + (i === 0 ? ' is-active' : '') + '" role="tab" aria-selected="' + (i === 0) + '" aria-label="' + item.title + '" data-i="' + i + '"><img src="' + item.src + '" alt=""></button>';
+  }).join('');
+
+  function paintGallery(animate) {
+    var width = gStage.offsetWidth;
+    gTrack.classList.toggle('is-dragging', !animate);
+    gTrack.style.transform = 'translateX(' + (-gIndex * width) + 'px)';
+    var thumbs = gStrip.querySelectorAll('.gallery__thumb');
+    for (var i = 0; i < thumbs.length; i++) {
+      thumbs[i].classList.toggle('is-active', i === gIndex);
+      thumbs[i].setAttribute('aria-selected', String(i === gIndex));
+    }
+    $('#galleryPrev').disabled = gIndex === 0;
+    $('#galleryNext').disabled = gIndex === GALLERY.length - 1;
+  }
+
+  function goGallery(i) {
+    gIndex = Math.max(0, Math.min(GALLERY.length - 1, i));
+    paintGallery(true);
+  }
+
+  paintGallery(true);
+  window.addEventListener('resize', function () { paintGallery(true); });
+
+  $('#galleryPrev').addEventListener('click', function () { goGallery(gIndex - 1); });
+  $('#galleryNext').addEventListener('click', function () { goGallery(gIndex + 1); });
+  gStrip.addEventListener('click', function (e) {
+    var t = e.target.closest('[data-i]');
+    if (t) goGallery(Number(t.getAttribute('data-i')));
+  });
+
+  (function () {
+    var down = false, startX = 0, startTx = 0, dx = 0, startTime = 0;
+
+    function pos(e) { return (e.touches ? e.touches[0].clientX : e.clientX); }
+
+    gTrack.addEventListener('pointerdown', function (e) {
+      down = true;
+      startX = pos(e);
+      startTime = Date.now();
+      var width = gStage.offsetWidth;
+      startTx = -gIndex * width;
+      dx = 0;
+      gTrack.classList.add('is-dragging');
+      gTrack.setPointerCapture && gTrack.setPointerCapture(e.pointerId);
+    });
+
+    gTrack.addEventListener('pointermove', function (e) {
+      if (!down) return;
+      dx = pos(e) - startX;
+      gTrack.style.transform = 'translateX(' + (startTx + dx) + 'px)';
+    });
+
+    function release() {
+      if (!down) return;
+      down = false;
+      var width = gStage.offsetWidth;
+      var dt = Math.max(1, Date.now() - startTime);
+      var velocity = dx / dt;
+      var next = gIndex;
+      if (Math.abs(velocity) > 0.5) next = velocity < 0 ? gIndex + 1 : gIndex - 1;
+      else if (Math.abs(dx) > width * 0.22) next = dx < 0 ? gIndex + 1 : gIndex - 1;
+      goGallery(next);
+    }
+
+    gTrack.addEventListener('pointerup', release);
+    gTrack.addEventListener('pointercancel', release);
+  })();
+
+  /* ------------------------------------------------------------ index --- */
+
+  var index = $('#index');
+  var preview = $('#detailsPreview');
+  var selected = 0;
+
+  index.innerHTML = OBJECTS.map(function (o, i) {
+    return '<button type="button" class="index__row' + (i === 0 ? ' is-live' : '') + '" role="tab" aria-selected="' + (i === 0) + '" data-i="' + i + '" data-cursor="View">' +
+      '<span class="index__name">' + o.name + '</span>' +
+      '<span class="index__spec">' + o.spec + '</span></button>';
+  }).join('');
+
+  function previewLayer(item, active) {
+    var media = item.src
+      ? '<img class="frame--fill" style="object-fit:cover" src="' + item.src + '" alt="' + item.name + '">'
+      : '<video class="plate__still frame--fill" muted playsinline preload="metadata" tabindex="-1" src="' + CLIP + '#t=' + item.t + '"></video>';
+    var cap = item.src ? item.name : tape(item.t);
+    var div = document.createElement('div');
+    div.className = 'details__preview-layer' + (active ? ' is-shown' : '');
+    div.innerHTML = media + '<span class="details__preview-cap">' + cap + '</span>';
+    return div;
+  }
+
+  preview.appendChild(previewLayer(OBJECTS[0], true));
+
+  function setSelected(i) {
+    if (i === selected) return;
+    selected = i;
+    var rows = index.querySelectorAll('.index__row');
+    for (var r = 0; r < rows.length; r++) {
+      rows[r].classList.toggle('is-live', r === i);
+      rows[r].setAttribute('aria-selected', String(r === i));
+    }
+
+    var layers = preview.querySelectorAll('.details__preview-layer');
+    layers.forEach(function (l) { l.classList.remove('is-shown'); });
+    var next = previewLayer(OBJECTS[i], false);
+    preview.appendChild(next);
+    requestAnimationFrame(function () { next.classList.add('is-shown'); });
+
+    setTimeout(function () {
+      layers.forEach(function (l) { if (l.parentNode) l.parentNode.removeChild(l); });
+    }, 360);
+  }
+
+  index.addEventListener('pointerover', function (e) {
+    var row = e.target.closest('.index__row');
+    if (row) setSelected(Number(row.getAttribute('data-i')));
+  });
+  index.addEventListener('focusin', function (e) {
+    var row = e.target.closest('.index__row');
+    if (row) setSelected(Number(row.getAttribute('data-i')));
+  });
+  index.addEventListener('click', function (e) {
+    var row = e.target.closest('.index__row');
+    if (row) setSelected(Number(row.getAttribute('data-i')));
+  });
+
+  /* ----------------------------------------------------------- reveal --- */
+
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (!entry.isIntersecting) return;
+        entry.target.classList.add('is-in');
+        io.unobserve(entry.target);
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -8% 0px' });
+    document.querySelectorAll('[data-reveal]').forEach(function (el) { io.observe(el); });
+  } else {
+    document.querySelectorAll('[data-reveal]').forEach(function (el) { el.classList.add('is-in'); });
+  }
+
+  /* -------------------------------------------------------------- rail -- */
+
+  var rail = $('#rail');
+  var sFrame = 0;
+  function paintScroll() {
+    sFrame = 0;
+    rail.classList.toggle('is-docked', window.scrollY > 60);
+  }
+  window.addEventListener('scroll', function () {
+    if (!sFrame) sFrame = requestAnimationFrame(paintScroll);
+  }, { passive: true });
+  paintScroll();
+
+  /* ----------------------------------------------------------- cursor --- */
+  /* Position tracks the pointer with zero lag; shape gets a little squash
+     and stretch physics — flick it and the ring stretches along the line
+     of travel, then relaxes back to a circle. */
+
+  if (fine && !reduced) {
+    var ring = $('#cursor');
+    var ringLabel = $('#cursorLabel');
+    document.body.classList.add('has-cursor');
+
+    var x = 0, y = 0, lastX = 0, lastY = 0, lastT = performance.now();
+    var targetStretch = 1, targetAngle = 0, curStretch = 1, curAngle = 0;
+    var cFrame = 0, idleTimer = 0, currentLabel = '', labelled = false;
+    var MAX_STRETCH = 1.85, SETTLE = 0.24, IDLE_MS = 90;
+
+    var paintCursor = function () {
+      cFrame = 0;
+      curStretch += (targetStretch - curStretch) * SETTLE;
+      curAngle += (targetAngle - curAngle) * SETTLE;
+      var stretch = labelled ? 1 : curStretch;
+      var squash = labelled ? 1 : Math.max(1 / curStretch, 1 / MAX_STRETCH);
+      ring.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0) rotate(' + curAngle.toFixed(1) + 'deg) scale(' + stretch.toFixed(3) + ',' + squash.toFixed(3) + ')';
+      var settled = Math.abs(curStretch - targetStretch) < 0.003 && targetStretch <= 1.001;
+      if (!settled) cFrame = requestAnimationFrame(paintCursor);
+    };
+    var scheduleCursor = function () { if (!cFrame) cFrame = requestAnimationFrame(paintCursor); };
+
+    window.addEventListener('pointermove', function (e) {
+      var now = performance.now();
+      var dt = Math.max(1, now - lastT);
+      var dx = e.clientX - lastX, dy = e.clientY - lastY;
+      var speed = Math.hypot(dx, dy) / dt;
+
+      x = e.clientX; y = e.clientY;
+
+      if (!labelled) {
+        targetStretch = Math.min(MAX_STRETCH, 1 + speed * 1.05);
+        if (speed > 0.03) targetAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
+      }
+
+      lastX = x; lastY = y; lastT = now;
+      clearTimeout(idleTimer);
+      idleTimer = setTimeout(function () { targetStretch = 1; scheduleCursor(); }, IDLE_MS);
+      scheduleCursor();
+
+      var target = e.target.closest ? e.target.closest('[data-cursor]') : null;
+      var next = target ? target.getAttribute('data-cursor') : '';
+      if (next !== currentLabel) {
+        currentLabel = next;
+        labelled = Boolean(next);
+        if (labelled) { targetStretch = 1; curStretch = 1; }
+        ringLabel.textContent = next;
+        ring.classList.toggle('is-labelled', labelled);
+      }
+    }, { passive: true });
+
+    document.addEventListener('pointerleave', function () { ring.style.opacity = '0'; });
+    document.addEventListener('pointerenter', function () { ring.style.opacity = '1'; });
+  }
+
+  /* ------------------------------------------------------------ sheet --- */
+
+  var sheet = $('#sheet');
+  function openSheet(open) {
+    if (open) { sheet.hidden = false; requestAnimationFrame(function () { sheet.classList.add('is-open'); }); }
+    else { sheet.classList.remove('is-open'); setTimeout(function () { sheet.hidden = true; }, 200); }
+    $('#burger').setAttribute('aria-expanded', String(open));
+    document.body.classList.toggle('no-scroll', open);
+    if (open) $('#sheetClose').focus();
+  }
+  $('#burger').addEventListener('click', function () { openSheet(true); });
+  $('#sheetClose').addEventListener('click', function () { openSheet(false); });
+  document.querySelectorAll('[data-sheet-link]').forEach(function (el) {
+    el.addEventListener('click', function () { openSheet(false); });
+  });
+
+  /* ------------------------------------------------------------- desk --- */
+
+  var desk = $('#desk');
+  var deskBackdrop = $('#deskBackdrop');
+  var today = new Date();
+  var midnight = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+  var MONTHS = ['January','February','March','April','May','June','July','August','September','October','November','December'];
+  var WEEKDAY = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+  var DOW = ['Mo','Tu','We','Th','Fr','Sa','Su'];
+  var HORIZON = 9;
+
+  var offset = 0, chosen = null, guests = 12, occasion = null;
+
+  $('#chips').innerHTML = OCCASIONS.map(function (o) {
+    return '<button type="button" class="chip" data-occasion="' + o + '">' + o + '</button>';
+  }).join('');
+
+  function stamp() {
+    if (!chosen) return '';
+    var d = new Date(chosen.y, chosen.m, chosen.d);
+    return WEEKDAY[d.getDay()] + ' ' + chosen.d + ' ' + MONTHS[chosen.m].slice(0, 3) + ' ' + chosen.y;
+  }
+
+  function paintCal() {
+    var shown = new Date(today.getFullYear(), today.getMonth() + offset, 1);
+    var year = shown.getFullYear(), month = shown.getMonth();
+    $('#calMonth').textContent = MONTHS[month] + ' ' + year;
+    $('#calPrev').disabled = offset === 0;
+    $('#calNext').disabled = offset === HORIZON;
+
+    var html = DOW.map(function (d) { return '<span class="cal__dow">' + d + '</span>'; }).join('');
+    var leading = (new Date(year, month, 1).getDay() + 6) % 7;
+    for (var p = 0; p < leading; p++) html += '<span></span>';
+
+    var length = new Date(year, month + 1, 0).getDate();
+    for (var d = 1; d <= length; d++) {
+      var past = new Date(year, month, d) < midnight;
+      var on = chosen && chosen.y === year && chosen.m === month && chosen.d === d;
+      html += '<button type="button" class="cal__day" data-day="' + d + '" data-y="' + year + '" data-m="' + month + '"' +
+        (past ? ' disabled' : '') + ' aria-pressed="' + Boolean(on) + '"' +
+        ' aria-label="' + d + ' ' + MONTHS[month] + ' ' + year + '">' + d + '</button>';
+    }
+    $('#calGrid').innerHTML = html;
+  }
+
+  function paintDesk() {
+    $('#stepGuests').hidden = !chosen;
+    $('#stepOccasion').hidden = !chosen;
+    $('#guestsN').textContent = guests;
+    $('#guestsDown').disabled = guests <= 1;
+    $('#guestsUp').disabled = guests >= 20;
+    $('#guestsNote').textContent = guests >= 20 ? 'Ceiling — 20' : 'Holds 20';
+
+    document.querySelectorAll('[data-occasion]').forEach(function (chip) {
+      chip.setAttribute('aria-pressed', String(chip.getAttribute('data-occasion') === occasion));
+    });
+
+    $('#deskSummary').textContent = chosen
+      ? stamp() + ' · ' + guests + ' · ' + (occasion || '—')
+      : 'Pick a night';
+    $('#deskSend').disabled = !(chosen && occasion);
+  }
+
+  function openDesk(open) {
+    if (open) {
+      deskBackdrop.hidden = false;
+      desk.hidden = false;
+      requestAnimationFrame(function () {
+        deskBackdrop.classList.add('is-open');
+        desk.classList.add('is-open');
+      });
+      document.body.classList.add('no-scroll');
+      $('#deskForm').hidden = false;
+      $('#deskDone').hidden = true;
+      paintCal();
+      paintDesk();
+      $('#deskClose').focus();
+    } else {
+      deskBackdrop.classList.remove('is-open');
+      desk.classList.remove('is-open');
+      document.body.classList.remove('no-scroll');
+      setTimeout(function () { deskBackdrop.hidden = true; desk.hidden = true; }, 260);
+    }
+  }
+
+  document.querySelectorAll('[data-book]').forEach(function (el) {
+    el.addEventListener('click', function () { openDesk(true); });
+  });
+  $('#deskClose').addEventListener('click', function () { openDesk(false); });
+  $('#doneBack').addEventListener('click', function () { openDesk(false); });
+  deskBackdrop.addEventListener('click', function () { openDesk(false); });
+
+  $('#calPrev').addEventListener('click', function () { offset = Math.max(0, offset - 1); paintCal(); });
+  $('#calNext').addEventListener('click', function () { offset = Math.min(HORIZON, offset + 1); paintCal(); });
+
+  $('#calGrid').addEventListener('click', function (e) {
+    var day = e.target.closest('[data-day]');
+    if (!day || day.disabled) return;
+    chosen = { y: Number(day.getAttribute('data-y')), m: Number(day.getAttribute('data-m')), d: Number(day.getAttribute('data-day')) };
+    paintCal();
+    paintDesk();
+  });
+
+  $('#guestsDown').addEventListener('click', function () { guests = Math.max(1, guests - 1); paintDesk(); });
+  $('#guestsUp').addEventListener('click', function () { guests = Math.min(20, guests + 1); paintDesk(); });
+
+  $('#chips').addEventListener('click', function (e) {
+    var chip = e.target.closest('[data-occasion]');
+    if (!chip) return;
+    occasion = chip.getAttribute('data-occasion');
+    paintDesk();
+  });
+
+  $('#deskSend').addEventListener('click', function () {
+    $('#doneLine').textContent = stamp() + ' · ' + guests + ' ' + (guests === 1 ? 'person' : 'people') +
+      ' · ' + occasion + '. Someone reads every one of these — usually the person who lives here.';
+    $('#deskForm').hidden = true;
+    $('#deskDone').hidden = false;
+  });
+
+  window.addEventListener('keydown', function (e) {
+    if (e.key !== 'Escape') return;
+    if (!desk.hidden) openDesk(false);
+    if (!sheet.hidden) openSheet(false);
+  });
+})();
+</script>
+</body>
+</html>
