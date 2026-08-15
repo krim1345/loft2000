@@ -55,14 +55,14 @@ export const GALLERY = [
 ];
 
 export const OBJECTS = [
-  { name: 'CRT TV', spec: 'Trinitron · 14 inch', src: '/gallery/lounge.jpg' },
+  { name: 'CRT TV', spec: 'Trinitron · 14 inch', src: '/objects/crt-tv.jpg' },
   { name: 'Leather sofa', spec: 'Brown · seats six', src: '/gallery/lounge.jpg' },
-  { name: 'CD player', spec: 'Five-disc carousel', t: 2.7 },
-  { name: 'The tub', spec: 'Jets on request', src: '/gallery/jacuzzi.jpg' },
+  { name: 'CD player', spec: 'Five-disc carousel', src: '/objects/cd-player.jpg' },
+  { name: 'The tub', spec: 'Jets on request', src: '/objects/the-tub.jpg' },
   { name: 'Glass block wall', spec: 'Original · 1978', src: '/gallery/glassblock.jpg' },
-  { name: 'Neon light', spec: 'Red · always on', t: 19.2 },
-  { name: 'Polaroid wall', spec: '600 film · bring yours', t: 15.9 },
-  { name: 'Record player', spec: 'Belt drive · 33 and 45', t: 12.6 },
+  { name: 'Neon light', spec: 'Red · always on', src: '/objects/neon-light.jpg' },
+  { name: 'Polaroid wall', spec: '600 film · bring yours', src: '/objects/polaroid-wall.jpg' },
+  { name: 'Record player', spec: 'Belt drive · 33 and 45', src: '/objects/record-player.jpg' },
 ];
 
 /* A house's rules, not a manifesto — short, on purpose. */

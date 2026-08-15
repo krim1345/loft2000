@@ -174,9 +174,6 @@
         <p class="hero__sub">A private loft for nights worth remembering.</p>
         <div><a class="cta cta--type" href="#space" data-cursor="Explore"><span class="cta__label">Enter the loft →</span><span class="cta__bar" aria-hidden="true"></span></a></div>
       </div>
-      <div class="stack stack--end enter" style="--i:3.6">
-        <span class="label hero__cue tabular">Four floors up · no lift · 20 people</span>
-      </div>
     </div>
   </div>
 </section>
@@ -308,6 +305,7 @@
       <div class="map__legend">
         <span class="label">15 min from Manhattan</span>
         <span class="label">L train to Bedford Av · 4 min on foot</span>
+        <span class="label">Four floors up · no lift · 20 people</span>
         <span class="label">Full address once the date is confirmed</span>
       </div>
     </div>
@@ -443,14 +441,14 @@
   ];
 
   var OBJECTS = [
-    { name: 'CRT TV',           spec: 'Trinitron · 14 inch',        src: '../public/gallery/lounge.jpg' },
+    { name: 'CRT TV',           spec: 'Trinitron · 14 inch',        src: '../public/objects/crt-tv.jpg' },
     { name: 'Leather sofa',     spec: 'Brown · seats six',          src: '../public/gallery/lounge.jpg' },
-    { name: 'CD player',        spec: 'Five-disc carousel',         t: 2.7 },
-    { name: 'The tub',          spec: 'Jets on request',            src: '../public/gallery/jacuzzi.jpg' },
+    { name: 'CD player',        spec: 'Five-disc carousel',         src: '../public/objects/cd-player.jpg' },
+    { name: 'The tub',          spec: 'Jets on request',            src: '../public/objects/the-tub.jpg' },
     { name: 'Glass block wall', spec: 'Original · 1978',            src: '../public/gallery/glassblock.jpg' },
-    { name: 'Neon light',       spec: 'Red · always on',            t: 19.2 },
-    { name: 'Polaroid wall',    spec: '600 film · bring yours',     t: 15.9 },
-    { name: 'Record player',    spec: 'Belt drive · 33 and 45',     t: 12.6 }
+    { name: 'Neon light',       spec: 'Red · always on',            src: '../public/objects/neon-light.jpg' },
+    { name: 'Polaroid wall',    spec: '600 film · bring yours',     src: '../public/objects/polaroid-wall.jpg' },
+    { name: 'Record player',    spec: 'Belt drive · 33 and 45',     src: '../public/objects/record-player.jpg' }
   ];
 
   var RULES = [
@@ -724,29 +722,34 @@
   paintScroll();
 
   /* ----------------------------------------------------------- cursor --- */
-  /* Position tracks the pointer with zero lag; shape gets a little squash
-     and stretch physics — flick it and the ring stretches along the line
-     of travel, then relaxes back to a circle. */
+  /* Position eases toward the pointer rather than snapping to it — a few
+     ms of glide is what actually reads as "smooth"; zero lag looks like a
+     teleporting dot between mouse samples. Shape gets its own, slower ease:
+     a little squash-and-stretch physics — flick it and the ring stretches
+     along the line of travel, then relaxes back to a circle. */
 
   if (fine && !reduced) {
     var ring = $('#cursor');
     var ringLabel = $('#cursorLabel');
     document.body.classList.add('has-cursor');
 
-    var x = 0, y = 0, lastX = 0, lastY = 0, lastT = performance.now();
+    var rawX = 0, rawY = 0, x = 0, y = 0, lastX = 0, lastY = 0, lastT = performance.now();
     var targetStretch = 1, targetAngle = 0, curStretch = 1, curAngle = 0;
-    var cFrame = 0, idleTimer = 0, currentLabel = '', labelled = false;
-    var MAX_STRETCH = 1.85, SETTLE = 0.24, IDLE_MS = 90;
+    var cFrame = 0, idleTimer = 0, currentLabel = '', labelled = false, primed = false;
+    var POS_SETTLE = 0.42, MAX_STRETCH = 1.6, SETTLE = 0.16, IDLE_MS = 110;
 
     var paintCursor = function () {
       cFrame = 0;
+      x += (rawX - x) * POS_SETTLE;
+      y += (rawY - y) * POS_SETTLE;
       curStretch += (targetStretch - curStretch) * SETTLE;
       curAngle += (targetAngle - curAngle) * SETTLE;
       var stretch = labelled ? 1 : curStretch;
       var squash = labelled ? 1 : Math.max(1 / curStretch, 1 / MAX_STRETCH);
-      ring.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0) rotate(' + curAngle.toFixed(1) + 'deg) scale(' + stretch.toFixed(3) + ',' + squash.toFixed(3) + ')';
-      var settled = Math.abs(curStretch - targetStretch) < 0.003 && targetStretch <= 1.001;
-      if (!settled) cFrame = requestAnimationFrame(paintCursor);
+      ring.style.transform = 'translate3d(' + x.toFixed(1) + 'px,' + y.toFixed(1) + 'px,0) rotate(' + curAngle.toFixed(1) + 'deg) scale(' + stretch.toFixed(3) + ',' + squash.toFixed(3) + ')';
+      var posSettled = Math.abs(rawX - x) < 0.05 && Math.abs(rawY - y) < 0.05;
+      var shapeSettled = Math.abs(curStretch - targetStretch) < 0.003 && targetStretch <= 1.001;
+      if (!posSettled || !shapeSettled) cFrame = requestAnimationFrame(paintCursor);
     };
     var scheduleCursor = function () { if (!cFrame) cFrame = requestAnimationFrame(paintCursor); };
 
@@ -756,14 +759,15 @@
       var dx = e.clientX - lastX, dy = e.clientY - lastY;
       var speed = Math.hypot(dx, dy) / dt;
 
-      x = e.clientX; y = e.clientY;
+      rawX = e.clientX; rawY = e.clientY;
+      if (!primed) { x = rawX; y = rawY; primed = true; }
 
       if (!labelled) {
-        targetStretch = Math.min(MAX_STRETCH, 1 + speed * 1.05);
+        targetStretch = Math.min(MAX_STRETCH, 1 + speed * 0.8);
         if (speed > 0.03) targetAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
       }
 
-      lastX = x; lastY = y; lastT = now;
+      lastX = e.clientX; lastY = e.clientY; lastT = now;
       clearTimeout(idleTimer);
       idleTimer = setTimeout(function () { targetStretch = 1; scheduleCursor(); }, IDLE_MS);
       scheduleCursor();

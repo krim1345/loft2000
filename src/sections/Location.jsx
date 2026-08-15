@@ -31,6 +31,7 @@ export default function Location() {
           <div className="map__legend">
             <span className="label">15 min from Manhattan</span>
             <span className="label">L train to Bedford Av · 4 min on foot</span>
+            <span className="label">Four floors up · no lift · 20 people</span>
             <span className="label">Full address once the date is confirmed</span>
           </div>
         </div>

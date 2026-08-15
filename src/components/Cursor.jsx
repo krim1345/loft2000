@@ -1,15 +1,18 @@
 import { useEffect, useRef, useState } from 'react';
 import { useReducedMotion } from 'motion/react';
 
-/* Desktop-only. Position tracks the pointer with zero lag — a trailing dot
-   would be a toy. What DOES lag, briefly, is shape: a little squash-and-
-   stretch physics, like a drop of water dragged across glass. Flick the
-   cursor and the ring stretches along the line of travel; stop, and it
-   settles back to a circle over a few frames. */
+/* Desktop-only. Position eases toward the pointer rather than snapping to
+   it — a few milliseconds of glide is what actually reads as "smooth" on a
+   custom cursor; zero lag looks like a teleporting dot between mouse
+   samples. Shape gets its own, slower ease: a little squash-and-stretch
+   physics, like a drop of water dragged across glass. Flick the cursor and
+   the ring stretches along the line of travel; stop, and it settles back
+   to a circle over a few frames. */
 
-const MAX_STRETCH = 1.85;
-const SETTLE = 0.24; // per-frame ease toward the target shape
-const IDLE_MS = 90; // no new movement for this long -> relax to a circle
+const POS_SETTLE = 0.42; // per-frame ease toward the raw pointer position
+const MAX_STRETCH = 1.6;
+const SETTLE = 0.16; // per-frame ease toward the target shape — slower, softer
+const IDLE_MS = 110; // no new movement for this long -> relax to a circle
 
 export default function Cursor() {
   const ring = useRef(null);
@@ -22,6 +25,8 @@ export default function Cursor() {
 
     document.body.classList.add('has-cursor');
 
+    let rawX = 0;
+    let rawY = 0;
     let x = 0;
     let y = 0;
     let lastX = 0;
@@ -35,9 +40,12 @@ export default function Cursor() {
     let idleTimer = 0;
     let current = '';
     let labelled = false;
+    let primed = false;
 
     const paint = () => {
       frame = 0;
+      x += (rawX - x) * POS_SETTLE;
+      y += (rawY - y) * POS_SETTLE;
       curStretch += (targetStretch - curStretch) * SETTLE;
       curAngle += (targetAngle - curAngle) * SETTLE;
 
@@ -45,12 +53,13 @@ export default function Cursor() {
         const stretch = labelled ? 1 : curStretch;
         const squash = labelled ? 1 : Math.max(1 / curStretch, 1 / MAX_STRETCH);
         ring.current.style.transform =
-          `translate3d(${x}px, ${y}px, 0) rotate(${curAngle.toFixed(1)}deg) ` +
+          `translate3d(${x.toFixed(1)}px, ${y.toFixed(1)}px, 0) rotate(${curAngle.toFixed(1)}deg) ` +
           `scale(${stretch.toFixed(3)}, ${squash.toFixed(3)})`;
       }
 
-      const settled = Math.abs(curStretch - targetStretch) < 0.003 && targetStretch <= 1.001;
-      if (!settled) frame = requestAnimationFrame(paint);
+      const posSettled = Math.abs(rawX - x) < 0.05 && Math.abs(rawY - y) < 0.05;
+      const shapeSettled = Math.abs(curStretch - targetStretch) < 0.003 && targetStretch <= 1.001;
+      if (!posSettled || !shapeSettled) frame = requestAnimationFrame(paint);
     };
 
     const schedule = () => {
@@ -64,16 +73,21 @@ export default function Cursor() {
       const dy = event.clientY - lastY;
       const speed = Math.hypot(dx, dy) / dt; // px per ms
 
-      x = event.clientX;
-      y = event.clientY;
+      rawX = event.clientX;
+      rawY = event.clientY;
+      if (!primed) {
+        x = rawX;
+        y = rawY;
+        primed = true;
+      }
 
       if (!labelled) {
-        targetStretch = Math.min(MAX_STRETCH, 1 + speed * 1.05);
+        targetStretch = Math.min(MAX_STRETCH, 1 + speed * 0.8);
         if (speed > 0.03) targetAngle = (Math.atan2(dy, dx) * 180) / Math.PI;
       }
 
-      lastX = x;
-      lastY = y;
+      lastX = event.clientX;
+      lastY = event.clientY;
       lastT = now;
 
       clearTimeout(idleTimer);

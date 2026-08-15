@@ -44,10 +44,6 @@ export default function Hero() {
               </a>
             </div>
           </motion.div>
-
-          <motion.div {...line(0.7)} style={{ display: 'grid', gap: '0.4rem', justifyItems: 'end' }}>
-            <span className="label hero__cue tabular">Four floors up · no lift · 20 people</span>
-          </motion.div>
         </div>
       </div>
     </section>
