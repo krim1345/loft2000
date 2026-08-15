@@ -1,6 +1,26 @@
 # LOFT 2000®
 
-A landing page for a fictional rentable loft in Brooklyn that never left 2003.
+**Live:** https://krim1345.github.io/loft-2000/
+
+A rentable apartment that got stuck somewhere around 2003 — chrome remotes,
+a CRT in the corner, a jacuzzi lit up like a nightclub. This repo is the
+landing page for it: a fictional Brooklyn loft, built as a mood more than a
+product page. The clock across the top actually runs the room — flip it to
+`DAY / SUNSET / 02:00 AM` and every colour on the page follows.
+
+Небольшое предисловие: это не настоящая квартира и не настоящий листинг —
+это лендинг для *вымышленного* лофта в Бруклине, который как будто застрял
+в 2003 году: хромированный пульт, CRT-телевизор, светящееся джакузи в стиле
+Frutiger Aero. Идея была не "сделать сайт для аренды", а сделать *ощущение
+места* — переключатель `DAY / SUNSET / 02:00 AM` наверху страницы реально
+управляет светом всей страницы целиком, а не просто мигает картинкой.
+
+|                                                        |                                                              |
+| ------------------------------------------------------ | ------------------------------------------------------------ |
+| ![Hero](screenshots/hero.jpg)                           | ![Gallery](screenshots/gallery.jpg)                           |
+| Hero — cinematic full-bleed loop, mood dock bottom-left | Space — draggable photo gallery, real liminal interiors      |
+
+---
 
 ## Run it
 
