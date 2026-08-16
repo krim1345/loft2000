@@ -1,7 +1,7 @@
 {
   "name": "loft-2000",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "LOFT 2000® — a rentable loft that never left 2003.",
   "scripts": {
