@@ -1,6 +1,6 @@
 # LOFT 2000®
 
-**Live:** https://krim1345.github.io/loft-2000/
+**Live:** https://krim1345.github.io/loft2000/
 
 A rentable apartment that got stuck somewhere around 2003 — chrome remotes,
 a CRT in the corner, a jacuzzi lit up like a nightclub. This repo is the
@@ -37,7 +37,7 @@ npm install && npm run dev
 
 React 18 · Vite · Tailwind v4 · `motion/react` · lucide-react.
 
-**Deployed**: https://krim1345.github.io/loft-2000/ — served from `docs/`,
+**Deployed**: https://krim1345.github.io/loft2000/ — served from `docs/`,
 a flattened copy of `preview/index.html`. To update the live site after
 changing `preview/`, `src/styles/`, `public/fonts/`, or `public/gallery/`,
 rebuild `docs/` (rewrite `../src/styles/` → `styles/`, `../public/hero.mp4` →
